@@ -10,5 +10,5 @@ func attack():
 		proj.direction = Vector2.RIGHT.rotated(final_angle)
 		proj.rotation = final_angle
 		proj.damage = damage * player.stats.damage_multiplier
-		proj.modulate = Color.CYAN
+		proj.set_style("res://assets/sprites/proj_ice.png", Color.AQUA)
 		get_tree().current_scene.add_child(proj)

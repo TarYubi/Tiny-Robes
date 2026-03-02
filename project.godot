@@ -3,7 +3,7 @@ config_version=5
 [application]
 
 config/name="RobeSurvivors"
-run/main_scene="res://scenes/Level/ArenaLevel.tscn"
+run/main_scene="res://scenes/UI/MainMenu.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://assets/icons/icon.png"
 config/version="0.2.0"
@@ -65,6 +65,7 @@ toggle_fullscreen={
 
 GameManager="*res://autoload/GameManager.gd"
 InputHandler="*res://scripts/InputHandler.gd"
+SaveManager="*res://scripts/save/SaveManager.gd"
 
 [rendering]
 
