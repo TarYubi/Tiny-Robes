@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/Enemy/Bunny.tscn" id="3_enemy"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="4_player"]
 [ext_resource type="PackedScene" path="res://scenes/UI/HUD.tscn" id="5_hud"]
+[ext_resource type="PackedScene" path="res://scenes/UI/LevelUpPopup.tscn" id="11_levelup"]
 [ext_resource type="PackedScene" path="res://scenes/RobePickup.tscn" id="6_pickup"]
 [ext_resource type="Resource" path="res://resources/robes/fire_robe.tres" id="7_robe"]
 [ext_resource type="Texture2D" path="res://assets/sprites/candy_floor.png" id="10_floor"]
@@ -40,6 +41,8 @@ enemy_scenes = Array[PackedScene]([ExtResource("3_enemy")])
 [node name="Player" parent="." instance=ExtResource("4_player")]
 
 [node name="HUD" parent="." instance=ExtResource("5_hud")]
+
+[node name="LevelUpPopup" parent="." instance=ExtResource("11_levelup")]
 
 [node name="RobePickup" parent="." instance=ExtResource("6_pickup")]
 position = Vector2(100, 0)
