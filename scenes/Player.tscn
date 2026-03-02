@@ -207,6 +207,8 @@ shape = SubResource("RectangleShape2D_1")
 
 [node name="Weapons" type="Node2D" parent="."]
 
+[node name="SynergyEffects" type="Node2D" parent="."]
+
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(2, 2)
 
