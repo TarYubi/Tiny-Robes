@@ -1,6 +1,6 @@
 extends Node2D
 
-@export var wall_scene: PackedScene
+@export var wall_scenes: Array[PackedScene]
 @export var enemy_scenes: Array[PackedScene]
 @export var arena_size: Vector2 = Vector2(1200, 800)
 @export var sugar_cube_size: float = 32.0
@@ -48,7 +48,7 @@ func generate_arena():
 		spawn_wall(Vector2(half_size.x, y))
 
 func spawn_wall(pos: Vector2):
-	var wall = wall_scene.instantiate()
+	var wall = wall_scenes.pick_random().instantiate()
 	wall.position = pos
 	add_child(wall)
 

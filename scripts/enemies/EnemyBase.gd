@@ -22,6 +22,10 @@ func _physics_process(_delta):
 		if velocity.x != 0:
 			$Sprite2D.flip_h = velocity.x < 0
 
+		# Wobble animation
+		var time = Time.get_ticks_msec() / 150.0 + get_instance_id()
+		$Sprite2D.rotation = sin(time) * 0.1
+
 func take_damage(amount: float):
 	health -= amount
 	if health <= 0:

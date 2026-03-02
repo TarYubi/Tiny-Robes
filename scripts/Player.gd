@@ -36,7 +36,7 @@ func _ready():
 		var pea_shooter = pea_shooter_scene.instantiate()
 		weapon_container.add_child(pea_shooter)
 
-func _physics_process(_delta):
+func _physics_process(delta):
 	var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity = direction * base_speed * stats.speed_multiplier
 	move_and_slide()
@@ -44,6 +44,13 @@ func _physics_process(_delta):
 	if direction != Vector2.ZERO:
 		last_direction = direction
 		sprite.flip_h = direction.x < 0
+
+		# Animation: squash and stretch
+		var time = Time.get_ticks_msec() / 150.0
+		sprite.scale.y = 1.0 + sin(time) * 0.1
+		sprite.scale.x = 1.0 - sin(time) * 0.1
+	else:
+		sprite.scale = Vector2.ONE
 
 func equip_robe(robe_data: RobeData):
 	current_robes.append(robe_data)
