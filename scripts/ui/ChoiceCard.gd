@@ -20,13 +20,19 @@ func setup(data: Dictionary):
 	var rarity = data.get("rarity", "common")
 	match rarity:
 		"common":
-			border.modulate = Color.WHITE
+			border.modulate = Color.GRAY
 		"rare":
-			border.modulate = Color.MEDIUM_PURPLE
+			border.modulate = Color.CORNFLOWER_BLUE
 		"epic":
 			border.modulate = Color.GOLD
 		_:
 			border.modulate = Color.WHITE
+
+	if rarity == "epic":
+		# Simple glow effect using modulate tween
+		var tween = create_tween().set_loops()
+		tween.tween_property(border, "modulate:a", 0.5, 0.5)
+		tween.tween_property(border, "modulate:a", 1.0, 0.5)
 
 func _on_gui_input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:

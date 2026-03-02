@@ -4,9 +4,9 @@
 
 [resource]
 script = ExtResource("1_script")
-hat_name = "Regen Beanie"
-speed_bonus = 0.0
+hat_name = "Multi-Top-Hat"
+speed_bonus = -0.1
 damage_multiplier = 0.0
-regen_bonus = 2.0
-multi_shot_bonus = 0
-base_color = Color(1, 0.4, 0.4, 1)
+regen_bonus = 0.0
+multi_shot_bonus = 1
+base_color = Color(0.1, 0.1, 0.1, 1)

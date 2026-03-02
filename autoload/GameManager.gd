@@ -29,6 +29,14 @@ func end_run():
 	var duration = (Time.get_ticks_msec() / 1000.0) - run_start_time
 	# Candy = enemies killed / 2 + 1 candy per 10 seconds survived
 	var candy_earned = int(enemies_defeated / 2.0) + int(duration / 10.0)
+
+	# Meta upgrade: Double Candy
+	var meta = SaveManager.user_data.purchased_upgrades
+	if meta.get("double_candy_runs", 0) > 0:
+		candy_earned *= 2
+		SaveManager.user_data.purchased_upgrades["double_candy_runs"] -= 1
+		SaveManager.save_game()
+
 	SaveManager.add_candy(candy_earned)
 	print("Run ended. Earned ", candy_earned, " candies!")
 	return candy_earned

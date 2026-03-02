@@ -13,6 +13,8 @@ var upgrades = [
 	{"id": "candy_magnet", "name": "Candy Magnet", "cost": 120, "desc": "Pull candies from farther away!"},
 	{"id": "extra_life", "name": "Extra Life", "cost": 300, "desc": "Revive once with half HP."},
 	{"id": "rarity_boost", "name": "Rarity Boost", "cost": 250, "desc": "Higher chance for rare/epic robes."},
+	{"id": "double_candy_runs", "name": "Double Candy", "cost": 200, "desc": "Earn 2x candy for next 3 runs!"},
+	{"id": "hat_slots", "name": "Hat Slot +1", "cost": 400, "desc": "Wear more hats!"},
 	{"id": "unlock_fire", "name": "Fire Robe", "cost": 150, "desc": "Burn through waves of sugar!"},
 	{"id": "unlock_ice", "name": "Ice Robe", "cost": 150, "desc": "Freeze your gummy foes."},
 	{"id": "unlock_lightning", "name": "Lightning Robe", "cost": 200, "desc": "Zap them with sour power!"},
@@ -73,14 +75,28 @@ func setup_shop():
 
 		var buy_btn = Button.new()
 		buy_btn.text = str(upgrade.cost) + " 🍬"
-		buy_btn.pressed.connect(_on_upgrade_purchased.bind(upgrade))
+
+		# Check if maxed (simple limit for now)
+		var current_lvl = SaveManager.user_data.purchased_upgrades.get(upgrade.id, 0)
+		if upgrade.id.begins_with("unlock_"):
+			var item_id = upgrade.id.replace("unlock_", "")
+			if SaveManager.user_data.unlocked_robes.has(item_id) or SaveManager.user_data.unlocked_hats.has(item_id):
+				buy_btn.text = "UNLOCKED"
+				buy_btn.disabled = true
+		elif current_lvl >= 5: # Max level 5 for now
+			buy_btn.text = "MAXED OUT"
+			buy_btn.disabled = true
+
+		buy_btn.pressed.connect(_on_upgrade_purchased.bind(upgrade, buy_btn))
 		vbox.add_child(buy_btn)
 
 		upgrade_grid.add_child(panel)
 
-func _on_upgrade_purchased(upgrade):
+func _on_upgrade_purchased(upgrade, btn):
 	if SaveManager.spend_candy(upgrade.cost):
-		if upgrade.id.begins_with("unlock_"):
+		if upgrade.id == "double_candy_runs":
+			SaveManager.user_data.purchased_upgrades["double_candy_runs"] += 3
+		elif upgrade.id.begins_with("unlock_"):
 			var item_id = upgrade.id.replace("unlock_", "")
 			if upgrade.name.contains("Robe"):
 				if not SaveManager.user_data.unlocked_robes.has(item_id):
@@ -94,9 +110,38 @@ func _on_upgrade_purchased(upgrade):
 			SaveManager.user_data.purchased_upgrades[upgrade.id] = 1
 		SaveManager.save_game()
 		update_candy_display()
+
+		# Update button state
+		var current_lvl = SaveManager.user_data.purchased_upgrades.get(upgrade.id, 0)
+		if upgrade.id == "double_candy_runs":
+			btn.text = str(upgrade.cost) + " 🍬 (" + str(current_lvl) + " runs)"
+		elif upgrade.id.begins_with("unlock_"):
+			btn.text = "UNLOCKED"
+			btn.disabled = true
+		elif current_lvl >= 5:
+			btn.text = "MAXED OUT"
+			btn.disabled = true
+
 		if shop_sound.stream:
 			shop_sound.play()
-		# Add a visual feedback
+
+		# Visual feedback: Simple confetti burst on purchase
+		var confetti = CPUParticles2D.new()
+		confetti.position = btn.global_position + (btn.size / 2)
+		confetti.emitting = true
+		confetti.amount = 20
+		confetti.one_shot = true
+		confetti.explosiveness = 1.0
+		confetti.spread = 180.0
+		confetti.gravity = Vector2(0, 100)
+		confetti.initial_velocity_min = 50.0
+		confetti.initial_velocity_max = 100.0
+		confetti.color = Color.PINK
+		add_child(confetti)
+
+		# Auto-free after 2 seconds
+		get_tree().create_timer(2.0).timeout.connect(confetti.queue_free)
+
 		print("Purchased: ", upgrade.name)
 
 func show_main_menu():
