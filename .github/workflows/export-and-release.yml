@@ -1,0 +1,102 @@
+name: "export-and-release"
+on:
+  push:
+    tags:
+      - "v*"
+    branches:
+      - main
+
+variables:
+  GODOT_VERSION: 4.3
+  EXPORT_NAME: RobeSurvivors
+
+jobs:
+  export-windows:
+    name: Windows Export
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Setup templates
+        run: |
+          mkdir -v -p ~/.local/share/godot/export_templates/
+          ln -s /root/.local/share/godot/export_templates/4.3.stable ~/.local/share/godot/export_templates/4.3.stable
+      - name: Build
+        run: |
+          mkdir -v -p build/windows
+          godot --headless --verbose --export-release "Windows Desktop" build/windows/RobeSurvivors.exe
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: build/windows
+
+  export-macos:
+    name: macOS Export
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Setup templates
+        run: |
+          mkdir -v -p ~/.local/share/godot/export_templates/
+          ln -s /root/.local/share/godot/export_templates/4.3.stable ~/.local/share/godot/export_templates/4.3.stable
+      - name: Build
+        run: |
+          mkdir -v -p build/macos
+          godot --headless --verbose --export-release "macOS" build/macos/RobeSurvivors.zip
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: build/macos
+
+  export-linux:
+    name: Linux Export
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Setup templates
+        run: |
+          mkdir -v -p ~/.local/share/godot/export_templates/
+          ln -s /root/.local/share/godot/export_templates/4.3.stable ~/.local/share/godot/export_templates/4.3.stable
+      - name: Build
+        run: |
+          mkdir -v -p build/linux
+          godot --headless --verbose --export-release "Linux/X11" build/linux/RobeSurvivors.x86_64
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: build/linux
+
+  release:
+    name: Release
+    needs: [export-windows, export-macos, export-linux]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            windows/RobeSurvivors.exe
+            macos/RobeSurvivors.zip
+            linux/RobeSurvivors.x86_64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

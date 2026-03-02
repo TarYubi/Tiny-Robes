@@ -12,7 +12,27 @@ A cute roguelike bullet-heaven game built in Godot 4.3.
 - **Controller Left Stick**: Movement
 - **Attacks**: Automatic
 
-## Setup and Run
+## Playable Builds & Downloads
+You can download the latest pre-compiled versions of RobeSurvivors from the [GitHub Releases](https://github.com/TarYubi/Tiny-Robes/releases) page.
+
+### Manual Export Instructions
+If you want to build the executable yourself:
+1. Download [Godot 4.3](https://godotengine.org/).
+2. Clone this repository.
+3. Open the project in Godot 4.3.
+4. Go to **Editor > Export...**.
+5. Select the desired preset (**Windows Desktop**, **macOS**, or **Linux/X11**).
+6. Click **Export Project** and choose a destination.
+7. Ensure "Export With Debug" is off for a release build.
+
+*Note: First-time export may require downloading templates via **Editor > Manage Export Templates**.*
+
+### Troubleshooting
+- **Windows**: Antivirus might flag the .exe as a false positive. You can safely allow it.
+- **macOS**: Gatekeeper may block the app. Right-click the app and select **Open** to bypass.
+- **Linux**: You may need to give the binary execution permissions: `chmod +x RobeSurvivors.x86_64`.
+
+## Setup and Run (Development)
 1. Download [Godot 4.3](https://godotengine.org/).
 2. Clone this repository.
 3. Open Godot and import the `project.godot` file.

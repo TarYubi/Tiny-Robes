@@ -5,7 +5,8 @@ config_version=5
 config/name="RobeSurvivors"
 run/main_scene="res://scenes/Level/ArenaLevel.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="res://assets/icons/icon.png"
+config/version="0.1.0"
 
 [display]
 
