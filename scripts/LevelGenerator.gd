@@ -41,6 +41,7 @@ func start_next_wave():
 	wave_timer.start()
 
 func _on_wave_timer_timeout():
+	GameManager.wave_completed.emit(current_wave)
 	start_next_wave()
 
 func generate_arena():
