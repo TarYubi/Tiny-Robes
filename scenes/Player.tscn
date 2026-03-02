@@ -1,8 +1,8 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/Player.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/sprites/player_underwear.png" id="2_texture"]
-[ext_resource type="Texture2D" path="res://assets/sprites/hat_speed.png" id="3_hat"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player/chibi_walk.png" id="2_base"]
+[ext_resource type="Shader" path="res://assets/shaders/shine.gdshader" id="3_shine"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(24, 28)
@@ -22,43 +22,67 @@ color = Color(1, 1, 1, 0.3)
 
 [sub_resource type="Animation" id="Animation_walk"]
 resource_name = "walk"
-length = 0.4
+length = 0.8
 loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Body/Sprite2D:position")
+tracks/0/path = NodePath("Body/Base:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 0,
-"values": [Vector2(0, 0), Vector2(0, -2), Vector2(0, 0), Vector2(0, -2)]
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("Body/SleeveL:position")
+tracks/1/path = NodePath("Body/RobeBase:frame")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.2),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector2(-14, -2), Vector2(-14, 2)]
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("Body/SleeveR:position")
+tracks/2/path = NodePath("Body/RobeTrim:frame")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
-"times": PackedFloat32Array(0, 0.2),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector2(14, 2), Vector2(14, -2)]
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Body/Sleeves:frame")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Body/ShineOverlay:frame")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7]
 }
 
 [sub_resource type="Animation" id="Animation_idle"]
@@ -67,21 +91,75 @@ length = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Body/Sprite2D:position")
+tracks/0/path = NodePath("Body/Base:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, 0)]
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Body/RobeBase:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Body/RobeTrim:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Body/Sleeves:frame")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Body/ShineOverlay:frame")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
 }
 
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_walk"]
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_visuals"]
 _data = {
 "idle": SubResource("Animation_idle"),
 "walk": SubResource("Animation_walk")
 }
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_shine"]
+shader = ExtResource("3_shine")
+shader_parameter/shine_progress = 0.0
+shader_parameter/shine_color = Color(1, 1, 1, 1)
+shader_parameter/shine_size = 0.2
 
 [node name="Player" type="CharacterBody2D"]
 collision_mask = 6
@@ -95,26 +173,34 @@ local_coords = false
 
 [node name="Body" type="Node2D" parent="."]
 
-[node name="Sprite2D" type="Sprite2D" parent="Body"]
-texture = ExtResource("2_texture")
+[node name="Base" type="Sprite2D" parent="Body"]
+texture = ExtResource("2_base")
+hframes = 8
 
-[node name="SleeveL" type="Sprite2D" parent="Body"]
+[node name="RobeBase" type="Sprite2D" parent="Body"]
 visible = false
-position = Vector2(-14, -2)
-texture = ExtResource("2_texture")
-region_enabled = true
-region_rect = Rect2(0, 0, 8, 16)
+hframes = 8
 
-[node name="SleeveR" type="Sprite2D" parent="Body"]
+[node name="RobeTrim" type="Sprite2D" parent="Body"]
 visible = false
-position = Vector2(14, 2)
-texture = ExtResource("2_texture")
-region_enabled = true
-region_rect = Rect2(0, 0, 8, 16)
+hframes = 8
+
+[node name="Sleeves" type="Sprite2D" parent="Body"]
+visible = false
+hframes = 8
 
 [node name="HatSprite" type="Sprite2D" parent="Body"]
+visible = false
 position = Vector2(0, -16)
-texture = ExtResource("3_hat")
+
+[node name="HatDetail" type="Sprite2D" parent="Body"]
+visible = false
+position = Vector2(0, -16)
+
+[node name="ShineOverlay" type="Sprite2D" parent="Body"]
+visible = false
+material = SubResource("ShaderMaterial_shine")
+hframes = 8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_1")
@@ -126,7 +212,7 @@ zoom = Vector2(2, 2)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_walk")
+"": SubResource("AnimationLibrary_visuals")
 }
 
 [node name="AudioPlayers" type="Node2D" parent="."]
