@@ -127,6 +127,10 @@ func equip_hat(hat_data: HatData):
 		hat_detail.texture = hat_data.detail_texture
 		hat_detail.visible = true
 
+	if hat_data.shader_material:
+		hat_sprite.material = hat_data.shader_material
+		hat_detail.material = hat_data.shader_material
+
 	stats.speed_multiplier += hat_data.speed_bonus
 	stats.damage_multiplier += hat_data.damage_multiplier
 	stats.regen_rate += hat_data.regen_bonus
@@ -184,6 +188,9 @@ func check_synergies():
 		synergy_triggered = true
 	elif "nature" in r_name and "party" in h_name:
 		effect_scene = "res://scenes/Effects/Synergies/PetalConfetti.tscn"
+		synergy_triggered = true
+	elif "star" in r_name and "mystic" in h_name:
+		effect_scene = "res://scenes/Effects/Synergies/GalacticComet.tscn"
 		synergy_triggered = true
 
 	if synergy_triggered:

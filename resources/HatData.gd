@@ -10,6 +10,7 @@ class_name HatData
 @export var base_color: Color = Color.WHITE
 @export var bob_speed: float = 2.0
 @export var bob_amplitude: float = 2.0
+@export var shader_material: ShaderMaterial
 
 @export_group("Stats")
 @export var speed_bonus: float = 0.0
