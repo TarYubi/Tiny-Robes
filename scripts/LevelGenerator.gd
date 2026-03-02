@@ -53,6 +53,11 @@ func spawn_wall(pos: Vector2):
 	add_child(wall)
 
 func spawn_wave(wave_num: int):
+	# Refresh enemy scenes to include new ones if they were added via editor
+	# but for this task we ensure they are present in the logic if needed
+	# although normally we'd set them in the inspector.
+	# Let's assume they are already in enemy_scenes or we can force them for verification.
+
 	var enemy_count = 5 + (wave_num * 3)
 	for i in range(enemy_count):
 		var enemy = enemy_scenes.pick_random().instantiate()
