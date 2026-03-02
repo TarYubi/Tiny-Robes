@@ -1,0 +1,24 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/LevelGenerator.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/Level/SugarCubeWall.tscn" id="2_wall"]
+[ext_resource type="PackedScene" path="res://scenes/Enemy/Bunny.tscn" id="3_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="4_player"]
+[ext_resource type="PackedScene" path="res://scenes/UI/HUD.tscn" id="5_hud"]
+[ext_resource type="PackedScene" path="res://scenes/RobePickup.tscn" id="6_pickup"]
+[ext_resource type="Resource" path="res://resources/robes/fire_robe.tres" id="7_robe"]
+
+[node name="ArenaLevel" type="Node2D"]
+
+[node name="LevelGenerator" type="Node2D" parent="."]
+script = ExtResource("1_script")
+wall_scene = ExtResource("2_wall")
+enemy_scenes = Array[PackedScene]([ExtResource("3_enemy")])
+
+[node name="Player" parent="." instance=ExtResource("4_player")]
+
+[node name="HUD" parent="." instance=ExtResource("5_hud")]
+
+[node name="RobePickup" parent="." instance=ExtResource("6_pickup")]
+position = Vector2(100, 0)
+robe_data = ExtResource("7_robe")

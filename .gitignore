@@ -1,0 +1,9 @@
+# Godot-specific ignores
+.godot/
+.tmp/
+export/
+*.import
+
+# OS-specific
+.DS_Store
+Thumbs.db

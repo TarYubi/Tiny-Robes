@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RobeData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://resources/RobeData.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/robe_thorn.png" id="2_sprite"]
+[ext_resource type="PackedScene" path="res://scenes/Weapons/ThornWeapon.tscn" id="3_weapon"]
+
+[resource]
+script = ExtResource("1_script")
+robe_name = "Thorn Robe"
+sprite_texture = ExtResource("2_sprite")
+weapon_scene = ExtResource("3_weapon")
+damage_multiplier = 0.9
+speed_bonus = 0.05
+fire_rate_multiplier = 1.2
