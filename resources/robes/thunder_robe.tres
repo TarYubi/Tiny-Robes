@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="RobeData" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://resources/RobeData.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/robes/thunder/thunder_base_walk.png" id="2_base"]
+[ext_resource type="Texture2D" path="res://assets/sprites/robes/thunder/thunder_trim_walk.png" id="3_trim"]
+[ext_resource type="Texture2D" path="res://assets/sprites/robes/thunder/thunder_sleeves_walk.png" id="4_sleeves"]
+[ext_resource type="Shader" path="res://assets/shaders/thunder_robe.gdshader" id="5_shader"]
+[ext_resource type="PackedScene" path="res://scenes/Weapons/LightningWeapon.tscn" id="6_weapon"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_thunder"]
+shader = ExtResource("5_shader")
+
+[resource]
+script = ExtResource("1_script")
+robe_name = "Thunder Robe"
+description = "A premium thunder robe with magical properties."
+base_texture = ExtResource("2_base")
+trim_texture = ExtResource("3_trim")
+sleeves_texture = ExtResource("4_sleeves")
+shader_material = SubResource("ShaderMaterial_thunder")
+weapon_scene = ExtResource("6_weapon")
+health_bonus = 0.0
+speed_bonus = 0.0
+damage_multiplier = 1.2
+fire_rate_multiplier = 1.0

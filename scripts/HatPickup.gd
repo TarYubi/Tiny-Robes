@@ -4,6 +4,7 @@ extends Area2D
 
 func _ready():
 	if hat_data:
+		$Sprite2D.texture = hat_data.hat_texture
 		$Sprite2D.self_modulate = hat_data.base_color
 	body_entered.connect(_on_body_entered)
 

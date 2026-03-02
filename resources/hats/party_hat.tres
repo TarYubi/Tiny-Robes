@@ -1,12 +1,12 @@
 [gd_resource type="Resource" script_class="HatData" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://resources/HatData.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/sprites/hats/regen_beanie.png" id="2_texture"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hats/party_hat.png" id="2_texture"]
 
 [resource]
 script = ExtResource("1_script")
-hat_name = "Regen beanie"
-description = "A cute regen beanie."
+hat_name = "Party hat"
+description = "A cute party hat."
 hat_texture = ExtResource("2_texture")
 base_color = Color(1, 1, 1, 1)
 bob_speed = 2.0
