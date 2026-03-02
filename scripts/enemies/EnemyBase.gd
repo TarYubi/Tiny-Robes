@@ -28,6 +28,17 @@ func _physics_process(_delta):
 
 func take_damage(amount: float):
 	health -= amount
+
+	# Hit flash
+	var tween = create_tween()
+	tween.tween_property($Sprite2D, "modulate", Color.RED, 0.1)
+	tween.tween_property($Sprite2D, "modulate", Color.WHITE, 0.1)
+
+	# Slight knockback
+	if player:
+		var knockback_dir = (global_position - player.global_position).normalized()
+		global_position += knockback_dir * 10.0
+
 	if health <= 0:
 		die()
 

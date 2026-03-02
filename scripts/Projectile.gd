@@ -6,6 +6,12 @@ var speed: float = 300.0
 var damage: float = 10.0
 var lifetime: float = 5.0
 
+func set_style(texture_path: String, particle_color: Color):
+	if has_node("Sprite2D"):
+		$Sprite2D.texture = load(texture_path)
+	if has_node("GPUParticles2D"):
+		$GPUParticles2D.process_material.color = particle_color
+
 func _ready():
 	body_entered.connect(_on_body_entered)
 	var timer = get_tree().create_timer(lifetime)
