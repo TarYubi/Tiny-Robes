@@ -111,6 +111,11 @@ func equip_robe(robe_data: RobeData):
 	stats.fire_rate_multiplier *= robe_data.fire_rate_multiplier
 	stats.speed_multiplier += robe_data.speed_bonus
 
+	if robe_data.health_bonus > 0:
+		max_health += robe_data.health_bonus
+		health += robe_data.health_bonus
+		GameManager.player_health_changed.emit(health, max_health)
+
 	if robe_data.weapon_scene:
 		var weapon = robe_data.weapon_scene.instantiate()
 		weapon_container.add_child(weapon)

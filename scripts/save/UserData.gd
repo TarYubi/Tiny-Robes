@@ -14,3 +14,4 @@ class_name UserData
 }
 @export var unlocked_robes: Array[String] = [] # None at start
 @export var unlocked_hats: Array[String] = []
+@export var seen_intro: bool = false
