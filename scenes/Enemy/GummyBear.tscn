@@ -1,6 +1,10 @@
 [gd_scene load_steps=4 format=3]
 
+<<<<<<< HEAD
+[ext_resource type="Script" path="res://scripts/enemies/GummyBear.gd" id="1_script"]
+=======
 [ext_resource type="Script" path="res://scripts/enemies/EnemyBase.gd" id="1_script"]
+>>>>>>> origin/luna-premium-robes-layers-shaders-10532435458121204687
 [ext_resource type="Texture2D" path="res://assets/sprites/gummy_bear.png" id="2_texture"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]

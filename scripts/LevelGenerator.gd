@@ -31,7 +31,10 @@ func start_next_wave():
 	wave_timer.start()
 
 func _on_wave_timer_timeout():
+<<<<<<< HEAD
 	GameManager.wave_completed.emit(current_wave)
+=======
+>>>>>>> origin/luna-premium-robes-layers-shaders-10532435458121204687
 	start_next_wave()
 
 func generate_arena():
@@ -54,6 +57,14 @@ func spawn_wall(pos: Vector2):
 	add_child(wall)
 
 func spawn_wave(wave_num: int):
+<<<<<<< HEAD
+	# Refresh enemy scenes to include new ones if they were added via editor
+	# but for this task we ensure they are present in the logic if needed
+	# although normally we'd set them in the inspector.
+	# Let's assume they are already in enemy_scenes or we can force them for verification.
+
+=======
+>>>>>>> origin/luna-premium-robes-layers-shaders-10532435458121204687
 	var enemy_count = 5 + (wave_num * 3)
 	for i in range(enemy_count):
 		var enemy = enemy_scenes.pick_random().instantiate()

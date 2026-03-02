@@ -30,10 +30,12 @@ func load_resources():
 			all_robes.append(ResourceLoader.load(path))
 
 	var hat_paths = [
-		"res://resources/hats/multi_top_hat.tres",
+		"res://resources/hats/multi_tophat.tres",
 		"res://resources/hats/power_crown.tres",
 		"res://resources/hats/regen_beanie.tres",
-		"res://resources/hats/speed_cap.tres"
+		"res://resources/hats/speed_cap.tres",
+		"res://resources/hats/mystic_turban.tres",
+		"res://resources/hats/party_hat.tres"
 	]
 	for path in hat_paths:
 		if ResourceLoader.exists(path):
@@ -130,9 +132,9 @@ func get_new_item_choice(current_choices) -> Dictionary:
 		return SaveManager.user_data.unlocked_robes.has(id)
 	)
 	var unlocked_hats = all_hats.filter(func(h):
-		var id = h.resource_path.get_file().replace(".tres", "").replace("_hat", "").replace("_cap", "").replace("_beanie", "").replace("_crown", "").replace("_top_hat", "")
-		# Handle the Top Hat shop ID vs resource name specifically if needed,
-		# but the shop ID is multi_top and resource is multi_top_hat.
+		var id = h.resource_path.get_file().replace(".tres", "").replace("_hat", "").replace("_cap", "").replace("_beanie", "").replace("_crown", "").replace("_top_hat", "").replace("_turban", "")
+		# Handle the Top Hat shop ID vs resource name specifically if needed
+		if id == "multi_top": return SaveManager.user_data.unlocked_hats.has("multi_top")
 		return SaveManager.user_data.unlocked_hats.has(id)
 	)
 

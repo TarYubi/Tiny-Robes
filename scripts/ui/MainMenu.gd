@@ -22,7 +22,9 @@ var upgrades = [
 	{"id": "unlock_multi_top", "name": "Top Hat", "cost": 150, "desc": "Shoot multiple projects!"},
 	{"id": "unlock_power_crown", "name": "Power Crown", "cost": 200, "desc": "Royal damage boost!"},
 	{"id": "unlock_regen_beanie", "name": "Regen Beanie", "cost": 180, "desc": "Healthy candy vibes."},
-	{"id": "unlock_speed_cap", "name": "Speed Cap", "cost": 150, "desc": "Quick like a bunny!"}
+	{"id": "unlock_speed_cap", "name": "Speed Cap", "cost": 150, "desc": "Quick like a bunny!"},
+	{"id": "unlock_mystic_turban", "name": "Mystic Turban", "cost": 250, "desc": "Arcane mystery!"},
+	{"id": "unlock_party_hat", "name": "Party Hat", "cost": 100, "desc": "Celebrate every kill!"}
 ]
 
 func _ready():
