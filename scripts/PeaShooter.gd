@@ -4,12 +4,11 @@ func attack():
 	var proj = projectile_scene.instantiate()
 	proj.position = player.global_position
 
-	# Peas shoot in movement direction or forward if standing still
-	var dir = player.last_direction
-	if dir == Vector2.ZERO:
-		dir = Vector2.RIGHT
+	# Peas shoot in facing direction
+	var dir = Vector2.RIGHT.rotated(player.rotation)
 
 	proj.direction = dir
+	proj.rotation = player.rotation
 	proj.damage = damage * player.stats.damage_multiplier
 	proj.speed = projectile_speed
 

@@ -40,19 +40,41 @@ func _ready():
 		weapon_container.add_child(pea_shooter)
 
 func _physics_process(delta):
+	# Movement
 	var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity = direction * base_speed * stats.speed_multiplier
 	move_and_slide()
 
+	# Rotation (Mouse / Controller)
+	var look_direction = Vector2.ZERO
+	var joy_dir = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down") # Common for right stick
+
+	if joy_dir.length() > 0.1:
+		look_direction = joy_dir
+	else:
+		look_direction = (get_global_mouse_position() - global_position).normalized()
+
+	if look_direction != Vector2.ZERO and not is_spinning:
+		var target_angle = look_direction.angle()
+		rotation = lerp_angle(rotation, target_angle, 15.0 * delta)
+		last_direction = look_direction
+
+	# Animation
 	if direction != Vector2.ZERO:
-		last_direction = direction
-		$Body.scale.x = -1 if direction.x < 0 else 1
 		anim_player.play("walk")
 	else:
 		anim_player.play("idle")
 
+var is_spinning: bool = false
+
 func equip_robe(robe_data: RobeData):
 	current_robes.append(robe_data)
+
+	# Spin animation
+	is_spinning = true
+	var tween = create_tween()
+	tween.tween_property(self, "rotation", rotation + PI * 2, 0.3)
+	tween.finished.connect(func(): is_spinning = false)
 
 	# Update visuals to the latest robe
 	# REPLACE WITH REAL PIXEL ART HERE

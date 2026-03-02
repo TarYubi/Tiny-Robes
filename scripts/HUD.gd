@@ -4,6 +4,7 @@ extends CanvasLayer
 @onready var heart_icon = $Control/HeartIcon
 @onready var score_label = $Control/ScoreLabel
 @onready var message_label = $Control/MessageLabel
+@onready var aim_indicator = $Control/AimIndicator
 @onready var level_up_menu = $Control/LevelUpMenu
 @onready var upgrade_button = $Control/LevelUpMenu/VBoxContainer/Option1
 @onready var hat_button = $Control/LevelUpMenu/VBoxContainer/Option2
@@ -17,6 +18,10 @@ func _ready():
 
 func _process(_delta):
 	score_label.text = "Score: %d" % GameManager.current_score
+
+	var player = get_tree().get_first_node_in_group("player")
+	if player:
+		aim_indicator.rotation = player.rotation
 
 func _on_health_changed(current, max_h):
 	health_bar.value = (current / max_h) * 100

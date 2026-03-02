@@ -39,8 +39,14 @@ func die():
 	queue_free()
 
 func spawn_death_effect():
-	# Simple placeholder for candy explosion
-	pass
+	var effect_scene = load("res://scenes/Effects/DeathParticles.tscn")
+	if effect_scene:
+		var effect = effect_scene.instantiate()
+		effect.position = global_position
+		# Match enemy color
+		effect.process_material.color = $Sprite2D.modulate if $Sprite2D.modulate != Color.WHITE else Color(1, 0.5, 0.8)
+		get_tree().current_scene.add_child(effect)
+		effect.emitting = true
 
 func _on_hit_box_body_entered(body):
 	if body.is_in_group("player"):
