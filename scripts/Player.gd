@@ -115,6 +115,13 @@ func equip_hat(hat_data: HatData):
 
 	GameManager.hat_equipped.emit(hat_data)
 
+func apply_speed_modifier(multiplier: float, duration: float):
+	var original_multiplier = stats.speed_multiplier
+	stats.speed_multiplier *= multiplier
+	await get_tree().create_timer(duration).timeout
+	# If we have multiple slows, this is simplistic but works for now
+	stats.speed_multiplier = original_multiplier
+
 func take_damage(amount: float):
 	health -= amount
 	GameManager.player_health_changed.emit(health, max_health)
