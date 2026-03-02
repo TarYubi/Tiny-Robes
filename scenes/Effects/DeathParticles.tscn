@@ -21,7 +21,10 @@ color = Color(1, 0.5, 0.8, 1)
 hue_variation_min = -0.2
 hue_variation_max = 0.2
 
+[ext_resource type="Script" path="res://scripts/AutoFreeParticles.gd" id="1_script"]
+
 [node name="DeathParticles" type="GPUParticles2D"]
+script = ExtResource("1_script")
 amount = 40
 process_material = SubResource("ParticleProcessMaterial_1")
 lifetime = 0.6

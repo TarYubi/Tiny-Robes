@@ -8,6 +8,16 @@ extends Node2D
 var current_wave: int = 0
 var wave_timer: Timer
 
+# Wave definitions: { "enemies": [ScenePath, ...], "count": int, "delay": float }
+var wave_data = [
+	{ "enemies": ["res://scenes/Enemy/Bunny.tscn"], "count": 8, "delay": 2.0 },
+	{ "enemies": ["res://scenes/Enemy/Bunny.tscn", "res://scenes/Enemy/GummyBear.tscn"], "count": 12, "delay": 1.5 },
+	{ "enemies": ["res://scenes/Enemy/JellyfishCandy.tscn", "res://scenes/Enemy/MarshmallowGhost.tscn"], "count": 15, "delay": 1.2 },
+	{ "enemies": ["res://scenes/Enemy/LollipopKnight.tscn", "res://scenes/Enemy/ChocolateSlime.tscn"], "count": 18, "delay": 1.0 },
+	{ "enemies": ["res://scenes/Enemy/PeppermintSpinner.tscn", "res://scenes/Enemy/SourPatchGremlin.tscn"], "count": 20, "delay": 0.8 },
+	{ "enemies": ["res://scenes/Enemy/Bunny.tscn", "res://scenes/Enemy/GummyBear.tscn", "res://scenes/Enemy/LollipopKnight.tscn", "res://scenes/Enemy/CupcakeBomber.tscn", "res://scenes/Enemy/ChocolateGolem.tscn", "res://scenes/Enemy/MarshmallowGhost.tscn", "res://scenes/Enemy/JellyfishCandy.tscn", "res://scenes/Enemy/ChocolateSlime.tscn", "res://scenes/Enemy/PeppermintSpinner.tscn", "res://scenes/Enemy/SourPatchGremlin.tscn"], "count": 30, "delay": 0.5 }
+]
+
 func _ready():
 	generate_arena()
 	# Wait a frame to ensure all nodes are in groups
@@ -15,19 +25,19 @@ func _ready():
 
 	wave_timer = Timer.new()
 	add_child(wave_timer)
-	wave_timer.wait_time = 30.0 # 30 seconds per wave
+	wave_timer.wait_time = 35.0 # Slightly longer waves
 	wave_timer.timeout.connect(_on_wave_timer_timeout)
 
 	start_next_wave()
 
 func start_next_wave():
 	current_wave += 1
-	if current_wave > 3:
+	if current_wave > wave_data.size():
 		print("All waves complete!")
 		return
 
-	GameManager.player_leveled_up.emit(current_wave) # Reusing signal for wave info
-	spawn_wave(current_wave)
+	GameManager.player_leveled_up.emit(current_wave)
+	spawn_wave_data(current_wave - 1)
 	wave_timer.start()
 
 func _on_wave_timer_timeout():
@@ -53,24 +63,40 @@ func spawn_wall(pos: Vector2):
 	wall.position = pos
 	add_child(wall)
 
-func spawn_wave(wave_num: int):
-	# Refresh enemy scenes to include new ones if they were added via editor
-	# but for this task we ensure they are present in the logic if needed
-	# although normally we'd set them in the inspector.
-	# Let's assume they are already in enemy_scenes or we can force them for verification.
+func spawn_wave_data(wave_index: int):
+	var data = wave_data[wave_index]
+	var count = data["count"]
+	var delay = data["delay"]
 
-	var enemy_count = 5 + (wave_num * 3)
-	for i in range(enemy_count):
-		var enemy = enemy_scenes.pick_random().instantiate()
-		# Spawn at random position within arena
-		var spawn_pos = Vector2(
-			randf_range(-arena_size.x/2 + 50, arena_size.x/2 - 50),
-			randf_range(-arena_size.y/2 + 50, arena_size.y/2 - 50)
-		)
-		# Ensure it's not too close to player
-		var player = get_tree().get_first_node_in_group("player")
-		if player and spawn_pos.distance_to(player.global_position) < 200:
-			spawn_pos += Vector2(200, 200) # Simple offset
+	for i in range(count):
+		var scene_path = data["enemies"].pick_random()
+		var enemy = load(scene_path).instantiate()
 
+		# Edge spawning
+		var spawn_pos = get_edge_spawn_pos()
 		enemy.position = spawn_pos
+
+		# Scaling difficulty
+		enemy.speed += (current_wave * 5.0)
+		enemy.health += (current_wave * 10.0)
+
 		add_child(enemy)
+		if delay > 0:
+			await get_tree().create_timer(delay / 2.0).timeout
+
+func get_edge_spawn_pos() -> Vector2:
+	var side = randi() % 4
+	var pos = Vector2.ZERO
+	var margin = 50.0
+
+	match side:
+		0: # Top
+			pos = Vector2(randf_range(-arena_size.x/2, arena_size.x/2), -arena_size.y/2 - margin)
+		1: # Bottom
+			pos = Vector2(randf_range(-arena_size.x/2, arena_size.x/2), arena_size.y/2 + margin)
+		2: # Left
+			pos = Vector2(-arena_size.x/2 - margin, randf_range(-arena_size.y/2, arena_size.y/2))
+		3: # Right
+			pos = Vector2(arena_size.x/2 + margin, randf_range(-arena_size.y/2, arena_size.y/2))
+
+	return pos

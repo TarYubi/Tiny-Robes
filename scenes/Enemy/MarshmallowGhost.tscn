@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/MarshmallowGhost.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/sugar_cube.png" id="2_texture"]
+[ext_resource type="PackedScene" path="res://scenes/Projectile.tscn" id="3_proj"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 12.0
+
+[node name="MarshmallowGhost" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_script")
+speed = 50.0
+health = 20.0
+projectile_scene = ExtResource("3_proj")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.7)
+scale = Vector2(0.8, 1.2)
+texture = ExtResource("2_texture")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_1")
+
+[node name="HitBox" type="Area2D" parent="."]
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+shape = SubResource("CircleShape2D_1")
+
+[connection signal="body_entered" from="HitBox" to="." method="_on_hit_box_body_entered"]

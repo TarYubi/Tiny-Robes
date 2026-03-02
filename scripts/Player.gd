@@ -152,53 +152,12 @@ func equip_hat(hat_data: HatData):
 	check_synergies()
 	GameManager.hat_equipped.emit(hat_data)
 
-func trigger_shine():
-	shine_overlay.visible = true
-	var mat = shine_overlay.material as ShaderMaterial
-	if mat:
-		var shine_tween = create_tween()
-		shine_tween.tween_property(mat, "shader_parameter/shine_progress", 1.0, 0.6).from(0.0)
-		shine_tween.finished.connect(func(): shine_overlay.visible = false)
-
-func check_synergies():
-	# Always clean old synergies first
-	for child in synergy_container.get_children():
-		child.queue_free()
-
-	if not latest_robe or not latest_hat:
-		return
-
-	var r_name = latest_robe.robe_name.to_lower()
-	var h_name = latest_hat.hat_name.to_lower()
-
-	var synergy_triggered = false
-	var effect_scene = ""
-
-	if "fire" in r_name and "speed" in h_name:
-		effect_scene = "res://scenes/Effects/Synergies/FlamingTrails.tscn"
-		synergy_triggered = true
-	elif "void" in r_name and "multi" in h_name:
-		effect_scene = "res://scenes/Effects/Synergies/OrbitingBlackHoles.tscn"
-		synergy_triggered = true
-	elif "frost" in r_name and "regen" in h_name:
-		effect_scene = "res://scenes/Effects/Synergies/HealingSnowflakes.tscn"
-		synergy_triggered = true
-	elif "nature" in r_name and "party" in h_name:
-		effect_scene = "res://scenes/Effects/Synergies/PetalConfetti.tscn"
-		synergy_triggered = true
-
-	if synergy_triggered:
-		var scene = load(effect_scene)
-		if scene:
-			var effect = scene.instantiate()
-			synergy_container.add_child(effect)
-			glow_up()
-
-func glow_up():
-	var tween = create_tween().set_parallel(true)
-	tween.tween_property(body_node, "scale", Vector2(1.2, 1.2), 0.2)
-	tween.chain().tween_property(body_node, "scale", Vector2(1.0, 1.0), 0.2)
-	trigger_shine()
+func apply_speed_modifier(multiplier: float, duration: float):
+	var original_multiplier = stats.speed_multiplier
+	stats.speed_multiplier *= multiplier
+	await get_tree().create_timer(duration).timeout
+	# If we have multiple slows, this is simplistic but works for now
+	stats.speed_multiplier = original_multiplier
 
 func take_damage(amount: float):
 	health -= amount
