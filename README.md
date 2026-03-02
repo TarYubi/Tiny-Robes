@@ -10,6 +10,8 @@ A cute roguelike bullet-heaven game built in Godot 4.3.
 ## Controls
 - **WASD / Arrow Keys**: Movement
 - **Controller Left Stick**: Movement
+- **Mouse**: Aim Direction
+- **F11 / Alt+Enter**: Toggle Fullscreen
 - **Attacks**: Automatic
 
 ## Playable Builds & Downloads
@@ -31,6 +33,9 @@ If you want to build the executable yourself:
 - **Windows**: Antivirus might flag the .exe as a false positive. You can safely allow it.
 - **macOS**: Gatekeeper may block the app. Right-click the app and select **Open** to bypass.
 - **Linux**: You may need to give the binary execution permissions: `chmod +x RobeSurvivors.x86_64`.
+
+### Fullscreen Support
+RobeSurvivors supports full screen mode to provide an immersive experience. You can toggle it using **F11** or **Alt+Enter**, or by clicking the button in the top-right corner of the HUD. Your preference will be saved and remembered for future play sessions.
 
 ## Setup and Run (Development)
 1. Download [Godot 4.3](https://godotengine.org/).

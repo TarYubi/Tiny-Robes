@@ -5,6 +5,7 @@ extends CanvasLayer
 @onready var score_label = $Control/ScoreLabel
 @onready var message_label = $Control/MessageLabel
 @onready var aim_indicator = $Control/AimIndicator
+@onready var fs_button = $Control/FullscreenButton
 @onready var level_up_menu = $Control/LevelUpMenu
 @onready var upgrade_button = $Control/LevelUpMenu/VBoxContainer/Option1
 @onready var hat_button = $Control/LevelUpMenu/VBoxContainer/Option2
@@ -12,6 +13,8 @@ extends CanvasLayer
 func _ready():
 	GameManager.player_health_changed.connect(_on_health_changed)
 	GameManager.player_leveled_up.connect(_on_wave_started)
+	InputHandler.fullscreen_toggled.connect(_on_fs_toggled)
+	fs_button.pressed.connect(InputHandler.toggle_fullscreen)
 	message_label.text = "Welcome to RobeSurvivors!"
 	var timer = get_tree().create_timer(3.0)
 	timer.timeout.connect(func(): message_label.text = "")
@@ -29,6 +32,9 @@ func _on_health_changed(current, max_h):
 	var tween = create_tween()
 	tween.tween_property(heart_icon, "scale", Vector2(1.2, 1.2), 0.1)
 	tween.tween_property(heart_icon, "scale", Vector2.ONE, 0.1)
+
+func _on_fs_toggled(is_fs: bool):
+	fs_button.text = "W" if is_fs else "⛶"
 
 func _on_wave_started(wave_num):
 	message_label.text = "Wave %d Started!" % wave_num
