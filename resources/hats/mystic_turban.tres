@@ -1,13 +1,15 @@
-[gd_resource type="Resource" script_class="HatData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="HatData" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://resources/HatData.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/sprites/hats/mystic_turban.png" id="2_texture"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hats/mystic_turban/base.png" id="2_base"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hats/mystic_turban/detail.png" id="3_detail"]
 
 [resource]
 script = ExtResource("1_script")
 hat_name = "Mystic turban"
-description = "A cute mystic turban."
-hat_texture = ExtResource("2_texture")
+description = "A cute premium mystic turban."
+hat_texture = ExtResource("2_base")
+detail_texture = ExtResource("3_detail")
 base_color = Color(1, 1, 1, 1)
 bob_speed = 2.0
 bob_amplitude = 2.0
