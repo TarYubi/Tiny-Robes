@@ -34,6 +34,7 @@ var hat_count: int = 0
 var hat_bob_tween: Tween
 
 func _ready():
+	apply_meta_upgrades()
 	health = max_health
 	add_to_group("player")
 
@@ -185,6 +186,28 @@ func shake_screen():
 	for i in range(4):
 		tween.tween_property(cam, "offset", Vector2(randf_range(-5, 5), randf_range(-5, 5)), 0.05)
 	tween.tween_property(cam, "offset", Vector2.ZERO, 0.05)
+
+func apply_meta_upgrades():
+	var meta = SaveManager.user_data.purchased_upgrades
+	if meta.has("health_bonus"):
+		max_health += meta["health_bonus"] * 10
+	if meta.has("speed_bonus"):
+		stats.speed_multiplier += meta["speed_bonus"] * 0.05
+
+	if meta.get("candy_magnet", 0) > 0:
+		# Assume there's a pickup radius property or similar
+		# If not, we'll note it as a stat for future use
+		stats["pickup_radius_multiplier"] = 1.0 + (meta["candy_magnet"] * 0.2)
+
+	if meta.get("lucky_start", 0) > 0:
+		# 20% per level chance
+		if randf() < (meta["lucky_start"] * 0.2):
+			var unlocked_robes = SaveManager.user_data.unlocked_robes
+			if unlocked_robes.size() > 0:
+				var robe_id = unlocked_robes.pick_random()
+				var robe_path = "res://resources/robes/" + robe_id + "_robe.tres"
+				if ResourceLoader.exists(robe_path):
+					equip_robe(load(robe_path))
 
 func die():
 	get_tree().reload_current_scene()
