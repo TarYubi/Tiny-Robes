@@ -21,19 +21,23 @@ func _ready():
 func load_resources():
 	var robe_paths = [
 		"res://resources/robes/fire_robe.tres",
-		"res://resources/robes/ice_robe.tres",
-		"res://resources/robes/lightning_robe.tres",
-		"res://resources/robes/thorn_robe.tres"
+		"res://resources/robes/frost_robe.tres",
+		"res://resources/robes/thunder_robe.tres",
+		"res://resources/robes/nature_robe.tres",
+		"res://resources/robes/arcane_robe.tres",
+		"res://resources/robes/void_robe.tres"
 	]
 	for path in robe_paths:
 		if ResourceLoader.exists(path):
 			all_robes.append(ResourceLoader.load(path))
 
 	var hat_paths = [
-		"res://resources/hats/multi_top_hat.tres",
+		"res://resources/hats/multi_tophat.tres",
 		"res://resources/hats/power_crown.tres",
 		"res://resources/hats/regen_beanie.tres",
-		"res://resources/hats/speed_cap.tres"
+		"res://resources/hats/speed_cap.tres",
+		"res://resources/hats/mystic_turban.tres",
+		"res://resources/hats/party_hat.tres"
 	]
 	for path in hat_paths:
 		if ResourceLoader.exists(path):
@@ -102,16 +106,16 @@ func get_upgrade_choice(player, current_choices) -> Dictionary:
 	match stat:
 		"damage":
 			title = "Power Candy"
-			desc = "Increases damage by " + str(int((multiplier-1)*100)) + "%!"
+			desc = "Extra sugar for your projectiles! Damage +" + str(int((multiplier-1)*100)) + "%!"
 		"speed":
 			title = "Sugar Rush"
-			desc = "Increases movement speed by " + str(int((multiplier-1)*100)) + "%!"
+			desc = "Run like a candy cane! Speed +" + str(int((multiplier-1)*100)) + "%!"
 		"fire_rate":
 			title = "Rapid Refill"
-			desc = "Increases fire rate by " + str(int((multiplier-1)*100)) + "%!"
+			desc = "Don't stop the sweets! Fire Rate +" + str(int((multiplier-1)*100)) + "%!"
 		"health":
 			title = "Heart Truffle"
-			desc = "Increases max health by " + str(int((multiplier-1)*100)) + "!"
+			desc = "A sweet treat for your heart! Max HP +10!"
 
 	return {
 		"type": "stat_upgrade",
@@ -124,8 +128,15 @@ func get_upgrade_choice(player, current_choices) -> Dictionary:
 	}
 
 func get_new_item_choice(current_choices) -> Dictionary:
-	var unlocked_robes = all_robes.filter(func(r): return SaveManager.user_data.unlocked_robes.has(r.resource_path.get_file().replace("_robe.tres", "")))
-	var unlocked_hats = all_hats.filter(func(h): return SaveManager.user_data.unlocked_hats.has(h.resource_path.get_file().replace("_hat.tres", "").replace("_cap.tres", "").replace("_beanie.tres", "").replace("_crown.tres", "").replace("_top_hat.tres", "")))
+	# Robust identification: remove .tres and common suffixes to match shop IDs
+	var unlocked_robes = all_robes.filter(func(r):
+		var id = r.resource_path.get_file().replace(".tres", "").replace("_robe", "")
+		return SaveManager.user_data.unlocked_robes.has(id)
+	)
+	var unlocked_hats = all_hats.filter(func(h):
+		var filename = h.resource_path.get_file().replace(".tres", "")
+		return SaveManager.user_data.unlocked_hats.has(filename)
+	)
 
 	# If no robes or hats unlocked, just give stats (direct call, no recursion)
 	if unlocked_robes.size() == 0 and unlocked_hats.size() == 0:
@@ -156,16 +167,16 @@ func get_new_item_choice(current_choices) -> Dictionary:
 					duplicate = true
 					break
 			if not duplicate: break
-			robe = all_robes.pick_random()
+			robe = unlocked_robes.pick_random()
 			attempts += 1
 
 		return {
 			"type": "robe",
 			"data": robe,
 			"title": robe.robe_name,
-			"description": "A sweet new robe with " + str(int(robe.health_bonus)) + " health bonus!",
+			"description": "Fresh from the loom! Extra spicy flames & " + str(int(robe.health_bonus)) + " health!",
 			"rarity": "common",
-			"texture": robe.sprite_texture
+			"texture": robe.base_texture
 		}
 	else:
 		var hat = unlocked_hats.pick_random()
@@ -176,16 +187,16 @@ func get_new_item_choice(current_choices) -> Dictionary:
 					duplicate = true
 					break
 			if not duplicate: break
-			hat = all_hats.pick_random()
+			hat = unlocked_hats.pick_random()
 			attempts += 1
 
 		return {
 			"type": "hat",
 			"data": hat,
 			"title": hat.hat_name,
-			"description": "A stylish hat that boosts your stats!",
+			"description": "Accessorize your magic! Extra candy vibes & stats!",
 			"rarity": "common",
-			"texture": hat.sprite_texture
+			"texture": hat.hat_texture
 		}
 
 func animate_cards_in():
@@ -199,6 +210,11 @@ func animate_cards_in():
 		tween.tween_property(card, "position:y", card.position.y - 100, 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT).set_delay(i * 0.1)
 
 func _on_card_selected(data):
+	# Disable all cards immediately to prevent multiple clicks
+	for card in card_container.get_children():
+		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	reroll_button.disabled = true
+
 	var player = get_tree().get_first_node_in_group("player")
 	if player:
 		match data["type"]:
@@ -240,7 +256,7 @@ func apply_stat_upgrade(player, data):
 		"fire_rate":
 			player.stats.fire_rate_multiplier *= multiplier
 		"health":
-			var bonus = int((multiplier - 1) * 100)
+			var bonus = 10
 			player.max_health += bonus
 			player.health += bonus
 			GameManager.player_health_changed.emit(player.health, player.max_health)

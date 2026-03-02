@@ -212,4 +212,16 @@ func apply_meta_upgrades():
 					equip_robe(load(robe_path))
 
 func die():
-	get_tree().reload_current_scene()
+	var meta = SaveManager.user_data.purchased_upgrades
+	if meta.get("extra_life", 0) > 0 and not has_revived:
+		has_revived = true
+		health = max_health / 2
+		GameManager.player_health_changed.emit(health, max_health)
+		# Visual feedback
+		flash_damage()
+		return
+
+	GameManager.end_run()
+	get_tree().change_scene_to_file("res://scenes/UI/MainMenu.tscn")
+
+var has_revived = false
