@@ -53,8 +53,13 @@ RobeSurvivors supports full screen mode to provide an immersive experience. You 
 - `autoload/`: Global singleton scripts
 
 ## How to add more Robes/Hats
-- **Robes**: Create a new `RobeData` resource in `resources/robes/`, assign a sprite, weapon scene, and stats.
-- **Hats**: Create a new `HatData` resource in `resources/hats/`, assign stats and colors.
+- **Robes**: Create a new `RobeData` resource in `resources/robes/`, assign layered sprites (base, trim, sleeves), a weapon scene, and stats. You can also assign custom shaders for magical effects.
+- **Hats**: Create a new `HatData` resource in `resources/hats/`, assign stats and textures.
+
+### Premium Visuals
+- **Layered Robes**: Each robe now consists of multiple layers for a high-quality look.
+- **Magical Shaders**: Custom shaders provide glow, flicker, and sway effects for different element types (Fire, Frost, Thunder, etc.).
+- **Dynamic Animations**: Includes tween-based spin effects and bobbing hats.
 
 ## License
 MIT

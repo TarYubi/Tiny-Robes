@@ -17,22 +17,37 @@ var stats = {
 
 var current_robes = []
 var hat_count: int = 0
-var base_hat_color: Color = Color.WHITE
 
-@onready var sprite = $Body/Sprite2D
-@onready var hat_sprite = $Body/HatSprite
-@onready var sleeve_l = $Body/SleeveL
-@onready var sleeve_r = $Body/SleeveR
 @onready var anim_player = $AnimationPlayer
 @onready var weapon_container = $Weapons
+
+# Visual Nodes
+@onready var body_node = $Body
+@onready var body_base = $Body/Base
+@onready var robe_base = $Body/RobeBase
+@onready var robe_trim = $Body/RobeTrim
+@onready var sleeves = $Body/Sleeves
+@onready var hat_sprite = $Body/HatSprite
+@onready var hat_detail = $Body/HatDetail
+@onready var shine_overlay = $Body/ShineOverlay
+
+var hat_bob_tween: Tween
 
 func _ready():
 	apply_meta_upgrades()
 	health = max_health
 	add_to_group("player")
-	# Start with basic underwear
-	sprite.texture = load("res://assets/sprites/player_underwear.png")
+
+	# Start in underwear
+	body_base.texture = load("res://assets/sprites/player/chibi_walk.png")
+
+	# Hide robe layers
+	robe_base.visible = false
+	robe_trim.visible = false
+	sleeves.visible = false
 	hat_sprite.visible = false
+	hat_detail.visible = false
+	shine_overlay.visible = false
 
 	# Start with basic pea shooter
 	var pea_shooter_scene = load("res://scenes/Weapons/PeaShooter.tscn")
@@ -48,7 +63,7 @@ func _physics_process(delta):
 
 	# Rotation (Mouse / Controller)
 	var look_direction = Vector2.ZERO
-	var joy_dir = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down") # Common for right stick
+	var joy_dir = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 
 	if joy_dir.length() > 0.1:
 		look_direction = joy_dir
@@ -71,19 +86,35 @@ var is_spinning: bool = false
 func equip_robe(robe_data: RobeData):
 	current_robes.append(robe_data)
 
-	# Spin animation
+	# Spin animation on Body node only to avoid affecting weapon rotation
 	is_spinning = true
-	var tween = create_tween()
-	tween.tween_property(self, "rotation", rotation + PI * 2, 0.3)
-	tween.finished.connect(func(): is_spinning = false)
+	var spin_tween = create_tween()
+	spin_tween.tween_property(body_node, "rotation", body_node.rotation + PI * 2, 0.3)
+	spin_tween.finished.connect(func(): is_spinning = false)
 
-	# Update visuals to the latest robe
-	# REPLACE WITH REAL PIXEL ART HERE
-	sprite.texture = robe_data.sprite_texture
-	sleeve_l.visible = true
-	sleeve_r.visible = true
-	sleeve_l.modulate = Color(1, 1, 1, 0.8) # Slight difference
-	sleeve_r.modulate = Color(1, 1, 1, 0.8)
+	# Update visuals
+	if robe_data.base_texture:
+		robe_base.texture = robe_data.base_texture
+		robe_base.visible = true
+		shine_overlay.texture = robe_data.base_texture
+
+	if robe_data.trim_texture:
+		robe_trim.texture = robe_data.trim_texture
+		robe_trim.visible = true
+		robe_trim.material = robe_data.shader_material
+
+	if robe_data.sleeves_texture:
+		sleeves.texture = robe_data.sleeves_texture
+		sleeves.visible = true
+		sleeves.material = robe_data.shader_material
+
+	# Trigger shine effect via Tween to avoid AnimationPlayer conflicts
+	shine_overlay.visible = true
+	var mat = shine_overlay.material as ShaderMaterial
+	if mat:
+		var shine_tween = create_tween()
+		shine_tween.tween_property(mat, "shader_parameter/shine_progress", 1.0, 0.6).from(0.0)
+		shine_tween.finished.connect(func(): shine_overlay.visible = false)
 
 	# Apply stats
 	stats.damage_multiplier *= robe_data.damage_multiplier
@@ -100,9 +131,12 @@ func equip_robe(robe_data: RobeData):
 func equip_hat(hat_data: HatData):
 	hat_count += 1
 	hat_sprite.visible = true
-	# REPLACE WITH REAL PIXEL ART HERE
-	if hat_data.sprite_texture:
-		hat_sprite.texture = hat_data.sprite_texture
+	if hat_data.hat_texture:
+		hat_sprite.texture = hat_data.hat_texture
+
+	if hat_data.detail_texture:
+		hat_detail.texture = hat_data.detail_texture
+		hat_detail.visible = true
 
 	# Stack stats
 	stats.speed_multiplier += hat_data.speed_bonus
@@ -110,31 +144,44 @@ func equip_hat(hat_data: HatData):
 	stats.regen_rate += hat_data.regen_bonus
 	stats.multi_shot += hat_data.multi_shot_bonus
 
-	# Update hat color based on count
-	# We'll use a simple hue shift or multiply
-	hat_sprite.self_modulate = hat_data.base_color.darkened(0.1 * (hat_count - 1))
+	# Bobbing animation - Kill previous to avoid leak
+	if hat_bob_tween:
+		hat_bob_tween.kill()
+
+	hat_bob_tween = create_tween().set_loops()
+	var start_pos = Vector2(0, -16)
+	hat_bob_tween.tween_property(hat_sprite, "position", start_pos + Vector2(0, -hat_data.bob_amplitude), 1.0 / hat_data.bob_speed).set_trans(Tween.TRANS_SINE)
+	hat_bob_tween.tween_property(hat_sprite, "position", start_pos, 1.0 / hat_data.bob_speed).set_trans(Tween.TRANS_SINE)
+
+	# Sync hat detail to same bobbing
+	var detail_tween = create_tween().set_loops()
+	detail_tween.tween_property(hat_detail, "position", start_pos + Vector2(0, -hat_data.bob_amplitude), 1.0 / hat_data.bob_speed).set_trans(Tween.TRANS_SINE)
+	detail_tween.tween_property(hat_detail, "position", start_pos, 1.0 / hat_data.bob_speed).set_trans(Tween.TRANS_SINE)
+	hat_bob_tween.finished.connect(func(): detail_tween.kill()) # Cleanup if main stops
 
 	GameManager.hat_equipped.emit(hat_data)
 
 func take_damage(amount: float):
 	health -= amount
 	GameManager.player_health_changed.emit(health, max_health)
-
-	# Damage flash and screen shake
 	flash_damage()
 	shake_screen()
-
 	if health <= 0:
 		die()
 
 func flash_damage():
 	var tween = create_tween()
-	sprite.modulate = Color.RED
-	tween.tween_property(sprite, "modulate", Color.WHITE, 0.2)
+	var parts = [body_base, robe_base, robe_trim, sleeves]
+	for part in parts:
+		part.modulate = Color.RED
+	tween.tween_property(body_base, "modulate", Color.WHITE, 0.2)
+	tween.finished.connect(func():
+		for part in parts: part.modulate = Color.WHITE
+	)
 
 func shake_screen():
-	# Simple camera shake
 	var cam = $Camera2D
+	if not cam: return
 	var tween = create_tween()
 	for i in range(4):
 		tween.tween_property(cam, "offset", Vector2(randf_range(-5, 5), randf_range(-5, 5)), 0.05)
@@ -163,16 +210,4 @@ func apply_meta_upgrades():
 					equip_robe(load(robe_path))
 
 func die():
-	var meta = SaveManager.user_data.purchased_upgrades
-	if meta.get("extra_life", 0) > 0 and not has_revived:
-		has_revived = true
-		health = max_health / 2
-		GameManager.player_health_changed.emit(health, max_health)
-		# Visual feedback
-		flash_damage()
-		return
-
-	GameManager.end_run()
-	get_tree().change_scene_to_file("res://scenes/UI/MainMenu.tscn")
-
-var has_revived = false
+	get_tree().reload_current_scene()
