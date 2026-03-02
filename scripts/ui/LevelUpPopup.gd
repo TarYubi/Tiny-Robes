@@ -21,9 +21,11 @@ func _ready():
 func load_resources():
 	var robe_paths = [
 		"res://resources/robes/fire_robe.tres",
-		"res://resources/robes/ice_robe.tres",
-		"res://resources/robes/lightning_robe.tres",
-		"res://resources/robes/thorn_robe.tres"
+		"res://resources/robes/frost_robe.tres",
+		"res://resources/robes/thunder_robe.tres",
+		"res://resources/robes/nature_robe.tres",
+		"res://resources/robes/arcane_robe.tres",
+		"res://resources/robes/void_robe.tres"
 	]
 	for path in robe_paths:
 		if ResourceLoader.exists(path):
@@ -126,16 +128,14 @@ func get_upgrade_choice(player, current_choices) -> Dictionary:
 	}
 
 func get_new_item_choice(current_choices) -> Dictionary:
-	# Robust identification: remove common suffixes and .tres
+	# Robust identification: remove .tres and common suffixes to match shop IDs
 	var unlocked_robes = all_robes.filter(func(r):
 		var id = r.resource_path.get_file().replace(".tres", "").replace("_robe", "")
 		return SaveManager.user_data.unlocked_robes.has(id)
 	)
 	var unlocked_hats = all_hats.filter(func(h):
-		var id = h.resource_path.get_file().replace(".tres", "").replace("_hat", "").replace("_cap", "").replace("_beanie", "").replace("_crown", "").replace("_top_hat", "").replace("_turban", "")
-		# Handle the Top Hat shop ID vs resource name specifically if needed
-		if id == "multi_top": return SaveManager.user_data.unlocked_hats.has("multi_top")
-		return SaveManager.user_data.unlocked_hats.has(id)
+		var filename = h.resource_path.get_file().replace(".tres", "")
+		return SaveManager.user_data.unlocked_hats.has(filename)
 	)
 
 	# If no robes or hats unlocked, just give stats (direct call, no recursion)
@@ -176,7 +176,7 @@ func get_new_item_choice(current_choices) -> Dictionary:
 			"title": robe.robe_name,
 			"description": "Fresh from the loom! Extra spicy flames & " + str(int(robe.health_bonus)) + " health!",
 			"rarity": "common",
-			"texture": robe.sprite_texture
+			"texture": robe.base_texture
 		}
 	else:
 		var hat = unlocked_hats.pick_random()
@@ -196,7 +196,7 @@ func get_new_item_choice(current_choices) -> Dictionary:
 			"title": hat.hat_name,
 			"description": "Accessorize your magic! Extra candy vibes & stats!",
 			"rarity": "common",
-			"texture": hat.sprite_texture
+			"texture": hat.hat_texture
 		}
 
 func animate_cards_in():

@@ -1,6 +1,5 @@
 [gd_scene load_steps=2 format=3]
 
-<<<<<<< HEAD
 [sub_resource type="Curve" id="Curve_1"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.5, 0.0, 0, 0]
 point_count = 2
@@ -8,13 +7,10 @@ point_count = 2
 [sub_resource type="CurveTexture" id="CurveTexture_1"]
 curve = SubResource("Curve_1")
 
-=======
->>>>>>> origin/luna-premium-robes-layers-shaders-10532435458121204687
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_1"]
 particle_flag_disable_z = true
 direction = Vector3(0, -1, 0)
 spread = 180.0
-<<<<<<< HEAD
 gravity = Vector3(0, 400, 0)
 initial_velocity_min = 150.0
 initial_velocity_max = 250.0
@@ -25,19 +21,11 @@ color = Color(1, 0.5, 0.8, 1)
 hue_variation_min = -0.2
 hue_variation_max = 0.2
 
-[node name="DeathParticles" type="GPUParticles2D"]
-amount = 40
-=======
-gravity = Vector3(0, 300, 0)
-initial_velocity_min = 100.0
-initial_velocity_max = 200.0
-scale_min = 2.0
-scale_max = 5.0
-color = Color(1, 0.4, 0.7, 1)
+[ext_resource type="Script" path="res://scripts/AutoFreeParticles.gd" id="1_script"]
 
 [node name="DeathParticles" type="GPUParticles2D"]
-amount = 30
->>>>>>> origin/luna-premium-robes-layers-shaders-10532435458121204687
+script = ExtResource("1_script")
+amount = 40
 process_material = SubResource("ParticleProcessMaterial_1")
 lifetime = 0.6
 one_shot = true

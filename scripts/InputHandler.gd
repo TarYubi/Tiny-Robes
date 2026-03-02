@@ -11,15 +11,12 @@ func _ready():
 func _input(event):
 	if event.is_action_pressed("toggle_fullscreen"):
 		toggle_fullscreen()
-<<<<<<< HEAD
 
 	if OS.is_debug_build() and event is InputEventKey and event.pressed and event.keycode == KEY_L:
 		GameManager.wave_completed.emit(-1) # Debug wave
 
 	if OS.is_debug_build() and event is InputEventKey and event.pressed and event.keycode == KEY_C:
 		SaveManager.add_candy(1000)
-=======
->>>>>>> origin/luna-premium-robes-layers-shaders-10532435458121204687
 
 func toggle_fullscreen():
 	var current_mode = DisplayServer.window_get_mode()

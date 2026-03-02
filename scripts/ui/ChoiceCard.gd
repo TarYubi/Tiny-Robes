@@ -24,7 +24,7 @@ func setup(data: Dictionary):
 		"rare":
 			border.modulate = Color.CORNFLOWER_BLUE
 		"epic":
-			border.modulate = Color.GOLD
+			border.modulate = Color.MEDIUM_PURPLE
 		_:
 			border.modulate = Color.WHITE
 

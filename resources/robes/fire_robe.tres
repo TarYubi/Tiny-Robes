@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-[gd_resource type="Resource" script_class="RobeData" load_steps=4 format=3]
-
-[ext_resource type="Script" path="res://resources/RobeData.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/sprites/robe_fire.png" id="2_sprite"]
-[ext_resource type="PackedScene" path="res://scenes/Weapons/FireWeapon.tscn" id="3_weapon"]
-=======
 [gd_resource type="Resource" script_class="RobeData" load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://resources/RobeData.gd" id="1_script"]
@@ -16,17 +9,10 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fire"]
 shader = ExtResource("5_shader")
->>>>>>> origin/luna-premium-robes-layers-shaders-10532435458121204687
 
 [resource]
 script = ExtResource("1_script")
 robe_name = "Fire Robe"
-<<<<<<< HEAD
-sprite_texture = ExtResource("2_sprite")
-weapon_scene = ExtResource("3_weapon")
-damage_multiplier = 1.2
-speed_bonus = 0.0
-=======
 description = "A premium fire robe with magical properties."
 base_texture = ExtResource("2_base")
 trim_texture = ExtResource("3_trim")
@@ -36,5 +22,4 @@ weapon_scene = ExtResource("6_weapon")
 health_bonus = 0.0
 speed_bonus = 0.0
 damage_multiplier = 1.2
->>>>>>> origin/luna-premium-robes-layers-shaders-10532435458121204687
 fire_rate_multiplier = 1.0
