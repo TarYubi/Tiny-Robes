@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 @onready var health_bar = $Control/HealthBar
+@onready var heart_icon = $Control/HeartIcon
 @onready var score_label = $Control/ScoreLabel
 @onready var message_label = $Control/MessageLabel
 @onready var level_up_menu = $Control/LevelUpMenu
@@ -19,6 +20,10 @@ func _process(_delta):
 
 func _on_health_changed(current, max_h):
 	health_bar.value = (current / max_h) * 100
+	# Pulsing heart icon on health change
+	var tween = create_tween()
+	tween.tween_property(heart_icon, "scale", Vector2(1.2, 1.2), 0.1)
+	tween.tween_property(heart_icon, "scale", Vector2.ONE, 0.1)
 
 func _on_wave_started(wave_num):
 	message_label.text = "Wave %d Started!" % wave_num

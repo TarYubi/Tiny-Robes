@@ -19,8 +19,11 @@ var current_robes = []
 var hat_count: int = 0
 var base_hat_color: Color = Color.WHITE
 
-@onready var sprite = $Sprite2D
-@onready var hat_sprite = $HatSprite
+@onready var sprite = $Body/Sprite2D
+@onready var hat_sprite = $Body/HatSprite
+@onready var sleeve_l = $Body/SleeveL
+@onready var sleeve_r = $Body/SleeveR
+@onready var anim_player = $AnimationPlayer
 @onready var weapon_container = $Weapons
 
 func _ready():
@@ -43,20 +46,21 @@ func _physics_process(delta):
 
 	if direction != Vector2.ZERO:
 		last_direction = direction
-		sprite.flip_h = direction.x < 0
-
-		# Animation: squash and stretch
-		var time = Time.get_ticks_msec() / 150.0
-		sprite.scale.y = 1.0 + sin(time) * 0.1
-		sprite.scale.x = 1.0 - sin(time) * 0.1
+		$Body.scale.x = -1 if direction.x < 0 else 1
+		anim_player.play("walk")
 	else:
-		sprite.scale = Vector2.ONE
+		anim_player.play("idle")
 
 func equip_robe(robe_data: RobeData):
 	current_robes.append(robe_data)
 
 	# Update visuals to the latest robe
+	# REPLACE WITH REAL PIXEL ART HERE
 	sprite.texture = robe_data.sprite_texture
+	sleeve_l.visible = true
+	sleeve_r.visible = true
+	sleeve_l.modulate = Color(1, 1, 1, 0.8) # Slight difference
+	sleeve_r.modulate = Color(1, 1, 1, 0.8)
 
 	# Apply stats
 	stats.damage_multiplier *= robe_data.damage_multiplier
@@ -73,6 +77,9 @@ func equip_robe(robe_data: RobeData):
 func equip_hat(hat_data: HatData):
 	hat_count += 1
 	hat_sprite.visible = true
+	# REPLACE WITH REAL PIXEL ART HERE
+	if hat_data.sprite_texture:
+		hat_sprite.texture = hat_data.sprite_texture
 
 	# Stack stats
 	stats.speed_multiplier += hat_data.speed_bonus
@@ -89,8 +96,26 @@ func equip_hat(hat_data: HatData):
 func take_damage(amount: float):
 	health -= amount
 	GameManager.player_health_changed.emit(health, max_health)
+
+	# Damage flash and screen shake
+	flash_damage()
+	shake_screen()
+
 	if health <= 0:
 		die()
+
+func flash_damage():
+	var tween = create_tween()
+	sprite.modulate = Color.RED
+	tween.tween_property(sprite, "modulate", Color.WHITE, 0.2)
+
+func shake_screen():
+	# Simple camera shake
+	var cam = $Camera2D
+	var tween = create_tween()
+	for i in range(4):
+		tween.tween_property(cam, "offset", Vector2(randf_range(-5, 5), randf_range(-5, 5)), 0.05)
+	tween.tween_property(cam, "offset", Vector2.ZERO, 0.05)
 
 func die():
 	# For now just reload

@@ -1,19 +1,40 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/LevelGenerator.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://scenes/Level/SugarCubeWall.tscn" id="2_wall"]
 [ext_resource type="PackedScene" path="res://scenes/Level/GumdropWall.tscn" id="8_gum"]
+[ext_resource type="PackedScene" path="res://scenes/Level/CandyCaneWall.tscn" id="9_cane"]
 [ext_resource type="PackedScene" path="res://scenes/Enemy/Bunny.tscn" id="3_enemy"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="4_player"]
 [ext_resource type="PackedScene" path="res://scenes/UI/HUD.tscn" id="5_hud"]
 [ext_resource type="PackedScene" path="res://scenes/RobePickup.tscn" id="6_pickup"]
 [ext_resource type="Resource" path="res://resources/robes/fire_robe.tres" id="7_robe"]
+[ext_resource type="Texture2D" path="res://assets/sprites/candy_floor.png" id="10_floor"]
 
 [node name="ArenaLevel" type="Node2D"]
 
+[node name="Background" type="ParallaxBackground" parent="."]
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="Background"]
+motion_mirroring = Vector2(1024, 1024)
+
+[node name="Floor" type="TextureRect" parent="Background/ParallaxLayer"]
+texture_filter = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -2000.0
+offset_top = -2000.0
+offset_right = 2000.0
+offset_bottom = 2000.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("10_floor")
+stretch_mode = 1
+
 [node name="LevelGenerator" type="Node2D" parent="."]
 script = ExtResource("1_script")
-wall_scenes = Array[PackedScene]([ExtResource("2_wall"), ExtResource("8_gum")])
+wall_scenes = Array[PackedScene]([ExtResource("2_wall"), ExtResource("8_gum"), ExtResource("9_cane")])
 enemy_scenes = Array[PackedScene]([ExtResource("3_enemy")])
 
 [node name="Player" parent="." instance=ExtResource("4_player")]

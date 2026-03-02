@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/Projectile.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/sprites/carrot.png" id="2_texture"]
+[ext_resource type="Texture2D" path="res://assets/sprites/proj_fire.png" id="2_tex"]
+[ext_resource type="PackedScene" path="res://scenes/Effects/ProjectileParticles.tscn" id="3_particles"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
 radius = 8.0
@@ -11,9 +12,10 @@ collision_layer = 0
 collision_mask = 2
 script = ExtResource("1_script")
 
+[node name="GPUParticles2D" parent="." instance=ExtResource("3_particles")]
+
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("2_texture")
+texture = ExtResource("2_tex")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_1")

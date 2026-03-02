@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="HatData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="HatData" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://resources/HatData.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hat_speed.png" id="2_tex"]
 
 [resource]
 script = ExtResource("1_script")
@@ -9,4 +10,5 @@ speed_bonus = 0.2
 damage_multiplier = 0.0
 regen_bonus = 0.0
 multi_shot_bonus = 0
-base_color = Color(0.2, 0.8, 0.2, 1)
+base_color = Color(1, 1, 1, 1)
+sprite_texture = ExtResource("2_tex")

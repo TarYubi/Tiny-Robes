@@ -34,7 +34,13 @@ func take_damage(amount: float):
 func die():
 	GameManager.add_score(score_value)
 	GameManager.enemy_defeated()
+	# REPLACE WITH REAL PIXEL ART HERE (Candy explosion)
+	spawn_death_effect()
 	queue_free()
+
+func spawn_death_effect():
+	# Simple placeholder for candy explosion
+	pass
 
 func _on_hit_box_body_entered(body):
 	if body.is_in_group("player"):
