@@ -12,6 +12,8 @@ collision_mask = 7
 script = ExtResource("1_script")
 speed = 150.0
 health = 15.0
+death_color = Color(1, 0.8, 0.9, 1)
+death_particle_amount = 100
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(1, 0.7, 0.8)
