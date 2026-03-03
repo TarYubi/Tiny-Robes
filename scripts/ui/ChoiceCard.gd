@@ -20,30 +20,32 @@ func setup(data: Dictionary):
 	var rarity = data.get("rarity", "common")
 	match rarity:
 		"common":
-			border.modulate = Color.GRAY
+			border.modulate = Color.WHITE
 		"rare":
-			border.modulate = Color.CORNFLOWER_BLUE
-		"epic":
 			border.modulate = Color.MEDIUM_PURPLE
+		"epic":
+			border.modulate = Color.GOLD
 		_:
 			border.modulate = Color.WHITE
 
 	if rarity == "epic":
 		# Simple glow effect using modulate tween
 		var tween = create_tween().set_loops()
-		tween.tween_property(border, "modulate:a", 0.5, 0.5)
-		tween.tween_property(border, "modulate:a", 1.0, 0.5)
+		tween.tween_property(border, "modulate", Color.GOLD * 1.5, 0.5)
+		tween.tween_property(border, "modulate", Color.GOLD, 0.5)
 
 func _on_gui_input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		selected.emit(choice_data)
 
 func _on_mouse_entered():
-	var tween = create_tween()
-	tween.tween_property(self, "scale", Vector2(1.05, 1.05), 0.1).set_trans(Tween.TRANS_BACK)
+	var tween = create_tween().set_parallel(true)
+	tween.tween_property(self, "scale", Vector2(1.1, 1.1), 0.1).set_trans(Tween.TRANS_BACK)
+	tween.tween_property(self, "rotation_degrees", randf_range(-2, 2), 0.1)
 	z_index = 10
 
 func _on_mouse_exited():
-	var tween = create_tween()
+	var tween = create_tween().set_parallel(true)
 	tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.1).set_trans(Tween.TRANS_BACK)
+	tween.tween_property(self, "rotation_degrees", 0.0, 0.1)
 	z_index = 0
