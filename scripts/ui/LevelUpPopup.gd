@@ -58,9 +58,9 @@ func generate_choices():
 	var player = get_tree().get_first_node_in_group("player")
 	var choices = []
 
-	# Option A & B: Upgrades (if possible)
-	choices.append(get_upgrade_choice(player, choices))
-	choices.append(get_upgrade_choice(player, choices))
+	# Option A & B: Upgrade existing or fallback to stat
+	choices.append(get_upgrade_or_stat_choice(player, choices))
+	choices.append(get_upgrade_or_stat_choice(player, choices))
 
 	# Option C: New Item
 	choices.append(get_new_item_choice(choices))
@@ -71,61 +71,88 @@ func generate_choices():
 		card.setup(choice_data)
 		card.selected.connect(_on_card_selected)
 
-func get_upgrade_choice(player, current_choices) -> Dictionary:
-	var stats_list = ["damage", "speed", "fire_rate", "health"]
-	var stat = stats_list.pick_random()
+func get_upgrade_or_stat_choice(player, current_choices) -> Dictionary:
+	var can_upgrade_robe = player and player.latest_robe != null
+	var can_upgrade_hat = player and player.latest_hat != null
 
-	# Try to avoid duplicate stats in the same popup
-	var attempts = 0
-	while attempts < 10:
-		var duplicate = false
-		for c in current_choices:
-			if c.get("type") == "stat_upgrade" and c.get("stat") == stat:
-				duplicate = true
-				break
-		if not duplicate:
-			break
-		stat = stats_list.pick_random()
-		attempts += 1
+	var choice_type = ["stat", "stat", "stat"]
+	if can_upgrade_robe: choice_type.append("robe_upgrade")
+	if can_upgrade_hat: choice_type.append("hat_upgrade")
+
+	var selected_type = choice_type.pick_random()
 
 	var rarities = ["common", "common", "common", "rare", "rare", "epic"]
-	# Rarity Boost: 10% more rare/epic per level
 	var meta = SaveManager.user_data.purchased_upgrades
 	var rarity_boost = meta.get("rarity_boost", 0)
 	for i in range(rarity_boost):
 		rarities.append(["rare", "epic"].pick_random())
-
 	var rarity = rarities.pick_random()
+
 	var multiplier = 1.1
 	if rarity == "rare": multiplier = 1.25
 	if rarity == "epic": multiplier = 1.5
 
-	var title = ""
-	var desc = ""
+	if selected_type == "robe_upgrade":
+		var robe = player.latest_robe
+		return {
+			"type": "stat_upgrade",
+			"stat": ["damage", "fire_rate", "speed"].pick_random(),
+			"multiplier": multiplier,
+			"title": robe.robe_name + " +",
+			"description": "Your current robe feels more magical! Boosted stats!",
+			"rarity": rarity,
+			"texture": robe.base_texture
+		}
+	elif selected_type == "hat_upgrade":
+		var hat = player.latest_hat
+		return {
+			"type": "stat_upgrade",
+			"stat": ["damage", "speed", "health"].pick_random(),
+			"multiplier": multiplier,
+			"title": hat.hat_name + " +",
+			"description": "Your hat is glowing with candy power! Extra bonuses!",
+			"rarity": rarity,
+			"texture": hat.hat_texture
+		}
+	else:
+		var stats_list = ["damage", "speed", "fire_rate", "health"]
+		var stat = stats_list.pick_random()
+		var attempts = 0
+		while attempts < 10:
+			var duplicate = false
+			for c in current_choices:
+				if c.get("type") == "stat_upgrade" and c.get("stat") == stat:
+					duplicate = true
+					break
+			if not duplicate: break
+			stat = stats_list.pick_random()
+			attempts += 1
 
-	match stat:
-		"damage":
-			title = "Power Candy"
-			desc = "Extra sugar for your projectiles! Damage +" + str(int((multiplier-1)*100)) + "%!"
-		"speed":
-			title = "Sugar Rush"
-			desc = "Run like a candy cane! Speed +" + str(int((multiplier-1)*100)) + "%!"
-		"fire_rate":
-			title = "Rapid Refill"
-			desc = "Don't stop the sweets! Fire Rate +" + str(int((multiplier-1)*100)) + "%!"
-		"health":
-			title = "Heart Truffle"
-			desc = "A sweet treat for your heart! Max HP +10!"
+		var title = ""
+		var desc = ""
+		match stat:
+			"damage":
+				title = "Power Candy"
+				desc = "Extra sugar for your projectiles! Damage +" + str(int((multiplier-1)*100)) + "%!"
+			"speed":
+				title = "Sugar Rush"
+				desc = "Run like a candy cane! Speed +" + str(int((multiplier-1)*100)) + "%!"
+			"fire_rate":
+				title = "Rapid Refill"
+				desc = "Don't stop the sweets! Fire Rate +" + str(int((multiplier-1)*100)) + "%!"
+			"health":
+				title = "Heart Truffle"
+				desc = "A sweet treat for your heart! Max HP +10!"
 
-	return {
-		"type": "stat_upgrade",
-		"stat": stat,
-		"multiplier": multiplier,
-		"title": title,
-		"description": desc,
-		"rarity": rarity,
-		"texture": load("res://assets/sprites/candy_cane.png")
-	}
+		return {
+			"type": "stat_upgrade",
+			"stat": stat,
+			"multiplier": multiplier,
+			"title": title,
+			"description": desc,
+			"rarity": rarity,
+			"texture": load("res://assets/sprites/candy_cane.png")
+		}
 
 func get_new_item_choice(current_choices) -> Dictionary:
 	# Robust identification: remove .tres and common suffixes to match shop IDs

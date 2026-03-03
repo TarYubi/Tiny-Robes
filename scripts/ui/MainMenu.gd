@@ -53,9 +53,9 @@ func setup_shop():
 		child.queue_free()
 
 	for upgrade in upgrades:
-		var panel = Panel.new()
+		var panel = PanelContainer.new()
 		panel.custom_minimum_size = Vector2(180, 150)
-		panel.modulate = Color(1, 0.82, 0.86, 1) # Pastel pink
+		panel.modulate = Color(1, 0.9, 0.95, 1) # Lighter pastel pink
 
 		var vbox = VBoxContainer.new()
 		vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE, 10)
