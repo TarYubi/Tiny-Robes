@@ -5,8 +5,6 @@ class_name EnemyBase
 @export var health: float = 30.0
 @export var damage: float = 10.0
 @export var score_value: int = 10
-@export var death_color: Color = Color(1, 0.5, 0.8)
-@export var death_particle_amount: int = 40
 
 var player: CharacterBody2D
 
@@ -44,20 +42,15 @@ func _physics_process(_delta):
 func take_damage(amount: float):
 	health -= amount
 
-	# Hit flash & Squash/Stretch using a single sequenced tween
+	# Hit flash
 	var tween = create_tween()
-	tween.set_parallel(true)
 	tween.tween_property($Sprite2D, "modulate", Color.RED, 0.1)
-	tween.tween_property($Sprite2D, "scale", Vector2(1.2, 0.8), 0.1)
-
-	tween.chain().set_parallel(true)
 	tween.tween_property($Sprite2D, "modulate", Color.WHITE, 0.1)
-	tween.tween_property($Sprite2D, "scale", Vector2.ONE, 0.1)
 
 	# Slight knockback
 	if player:
 		var knockback_dir = (global_position - player.global_position).normalized()
-		global_position += knockback_dir * 15.0
+		global_position += knockback_dir * 10.0
 
 	if health <= 0:
 		die()
@@ -69,37 +62,29 @@ func die():
 	queue_free()
 
 func spawn_death_effect():
-	# 1. Death Poof (White Cloud)
-	var poof_scene = load("res://scenes/Effects/DeathParticles.tscn")
-	if poof_scene:
-		var poof = poof_scene.instantiate()
-		poof.position = global_position
-		poof.amount = 20
-		var mat = poof.process_material.duplicate()
-		mat.color = Color(1, 1, 1, 0.8)
-		mat.scale_min = 8.0
-		mat.scale_max = 12.0
-		poof.process_material = mat
-		get_tree().current_scene.add_child(poof)
-		poof.emitting = true
-
-	# 2. Candy Explosion (Colored Shards)
-	var candy_scene = load("res://scenes/Effects/DeathParticles.tscn")
-	if candy_scene:
-		var effect = candy_scene.instantiate()
+	var effect_scene = load("res://scenes/Effects/DeathParticles.tscn")
+	if effect_scene:
+		var effect = effect_scene.instantiate()
 		effect.position = global_position
-		effect.amount = death_particle_amount
 
-		# Custom effects based on enemy type variables
+		# Custom effects based on enemy type
 		var mat = effect.process_material.duplicate()
-		mat.color = death_color
-
-		# Specialized logic for certain types if needed (e.g. peppermint shards)
-		if "Peppermint" in name:
+		effect.process_material = mat
+		if "Chocolate" in name:
+			mat.color = Color(0.3, 0.2, 0.1)
+			effect.amount = 60
+		elif "Marshmallow" in name:
+			mat.color = Color(1, 1, 1, 0.8)
+			mat.scale_min = 4.0
+			mat.scale_max = 8.0
+		elif "Peppermint" in name:
+			mat.color = Color(1, 0, 0) # Red/White shards
 			mat.hue_variation_min = 0.0
 			mat.hue_variation_max = 0.5 # Alternate red/white
+		else:
+			# Match enemy color
+			mat.color = $Sprite2D.modulate if $Sprite2D.modulate != Color.WHITE else Color(1, 0.5, 0.8)
 
-		effect.process_material = mat
 		get_tree().current_scene.add_child(effect)
 		effect.emitting = true
 
