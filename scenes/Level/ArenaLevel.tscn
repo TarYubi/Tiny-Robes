@@ -5,13 +5,8 @@
 [ext_resource type="PackedScene" path="res://scenes/Level/GumdropWall.tscn" id="8_gum"]
 [ext_resource type="PackedScene" path="res://scenes/Level/CandyCaneWall.tscn" id="9_cane"]
 [ext_resource type="PackedScene" path="res://scenes/Enemy/Bunny.tscn" id="3_enemy"]
-[ext_resource type="PackedScene" path="res://scenes/Enemy/GummyBear.tscn" id="11_gummy"]
-[ext_resource type="PackedScene" path="res://scenes/Enemy/LollipopKnight.tscn" id="12_lollipop"]
-[ext_resource type="PackedScene" path="res://scenes/Enemy/CupcakeBomber.tscn" id="13_cupcake"]
-[ext_resource type="PackedScene" path="res://scenes/Enemy/ChocolateGolem.tscn" id="14_choc"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="4_player"]
 [ext_resource type="PackedScene" path="res://scenes/UI/HUD.tscn" id="5_hud"]
-[ext_resource type="PackedScene" path="res://scenes/UI/LevelUpPopup.tscn" id="11_levelup"]
 [ext_resource type="PackedScene" path="res://scenes/RobePickup.tscn" id="6_pickup"]
 [ext_resource type="Resource" path="res://resources/robes/fire_robe.tres" id="7_robe"]
 [ext_resource type="Texture2D" path="res://assets/sprites/candy_floor.png" id="10_floor"]
@@ -40,13 +35,11 @@ stretch_mode = 1
 [node name="LevelGenerator" type="Node2D" parent="."]
 script = ExtResource("1_script")
 wall_scenes = Array[PackedScene]([ExtResource("2_wall"), ExtResource("8_gum"), ExtResource("9_cane")])
-enemy_scenes = Array[PackedScene]([ExtResource("3_enemy"), ExtResource("11_gummy"), ExtResource("12_lollipop"), ExtResource("13_cupcake"), ExtResource("14_choc")])
+enemy_scenes = Array[PackedScene]([ExtResource("3_enemy")])
 
 [node name="Player" parent="." instance=ExtResource("4_player")]
 
 [node name="HUD" parent="." instance=ExtResource("5_hud")]
-
-[node name="LevelUpPopup" parent="." instance=ExtResource("11_levelup")]
 
 [node name="RobePickup" parent="." instance=ExtResource("6_pickup")]
 position = Vector2(100, 0)

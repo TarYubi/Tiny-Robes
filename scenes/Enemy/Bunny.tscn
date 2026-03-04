@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/enemies/Bunny.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/sprites/bunny.png" id="2_texture"]
-[ext_resource type="PackedScene" path="res://scenes/Projectile.tscn" id="3_proj"]
+[ext_resource type="PackedScene" path="res://scenes/Projectile.tscn" id="2_proj"]
+[ext_resource type="PackedScene" path="res://scenes/3DCharacterViewport.tscn" id="3_renderer"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
 radius = 14.0
@@ -11,10 +11,11 @@ radius = 14.0
 collision_layer = 2
 collision_mask = 7
 script = ExtResource("1_script")
-projectile_scene = ExtResource("3_proj")
+projectile_scene = ExtResource("2_proj")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_texture")
+[node name="ViewportSprite" type="Sprite2D" parent="."]
+
+[node name="3DCharacterViewport" parent="ViewportSprite" instance=ExtResource("3_renderer")]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_1")

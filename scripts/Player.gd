@@ -16,50 +16,38 @@ var stats = {
 }
 
 var current_robes = []
-var latest_robe: RobeData
-var latest_hat: HatData
 var hat_count: int = 0
 
 @onready var anim_player = $AnimationPlayer
 @onready var weapon_container = $Weapons
-@onready var synergy_container = $SynergyEffects
 
 # Visual Nodes
-@onready var body_node = $Body
-@onready var body_base = $Body/Base
-@onready var robe_base = $Body/RobeBase
-@onready var robe_trim = $Body/RobeTrim
-@onready var sleeves = $Body/Sleeves
-@onready var hat_sprite = $Body/HatSprite
-@onready var hat_detail = $Body/HatDetail
-@onready var shine_overlay = $Body/ShineOverlay
+@onready var viewport_sprite = $Body/ViewportSprite
+@onready var renderer_3d = $Body/ViewportSprite/3DCharacterViewport
 
 var hat_bob_tween: Tween
-var hat_detail_tween: Tween
-var flash_tween: Tween
 
 func _ready():
-	apply_meta_upgrades()
 	health = max_health
 	add_to_group("player")
-	body_base.texture = load("res://assets/sprites/player/chibi_walk.png")
-	robe_base.visible = false
-	robe_trim.visible = false
-	sleeves.visible = false
-	hat_sprite.visible = false
-	hat_detail.visible = false
-	shine_overlay.visible = false
 
+	# Initialize 3D Viewport Texture
+	viewport_sprite.texture = renderer_3d.get_texture()
+	renderer_3d.setup_model(load("res://assets/models/WizardModel.tscn"))
+
+	# Start with basic pea shooter
 	var pea_shooter_scene = load("res://scenes/Weapons/PeaShooter.tscn")
 	if pea_shooter_scene:
 		var pea_shooter = pea_shooter_scene.instantiate()
 		weapon_container.add_child(pea_shooter)
 
 func _physics_process(delta):
+	# Movement
 	var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity = direction * base_speed * stats.speed_multiplier
 	move_and_slide()
 
+	# Rotation (Mouse / Controller)
 	var look_direction = Vector2.ZERO
 	var joy_dir = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 
@@ -70,47 +58,38 @@ func _physics_process(delta):
 
 	if look_direction != Vector2.ZERO and not is_spinning:
 		var target_angle = look_direction.angle()
-		rotation = lerp_angle(rotation, target_angle, 15.0 * delta)
+		viewport_sprite.rotation = lerp_angle(viewport_sprite.rotation, target_angle, 15.0 * delta)
 		last_direction = look_direction
 
+	# Animation
 	if direction != Vector2.ZERO:
-		anim_player.play("walk")
+		if renderer_3d: renderer_3d.play_animation("walk")
 	else:
-		anim_player.play("idle")
+		if renderer_3d: renderer_3d.play_animation("idle")
 
 var is_spinning: bool = false
 
 func equip_robe(robe_data: RobeData):
 	current_robes.append(robe_data)
-	latest_robe = robe_data
 
+	# Spin animation on ViewportSprite node
 	is_spinning = true
 	var spin_tween = create_tween()
-	spin_tween.tween_property(body_node, "rotation", body_node.rotation + PI * 2, 0.3)
+	spin_tween.tween_property(viewport_sprite, "rotation", viewport_sprite.rotation + PI * 2, 0.3)
 	spin_tween.finished.connect(func(): is_spinning = false)
 
-	if robe_data.base_texture:
-		robe_base.texture = robe_data.base_texture
-		robe_base.visible = true
-		shine_overlay.texture = robe_data.base_texture
+	# Rotate back to aim if not spinning
 
-	if robe_data.trim_texture:
-		robe_trim.texture = robe_data.trim_texture
-		robe_trim.visible = true
-		robe_trim.material = robe_data.shader_material
+	# Update 3D Visuals
+	if robe_data.shader_material:
+		renderer_3d.set_robe_material(robe_data.shader_material)
 
-	if robe_data.sleeves_texture:
-		sleeves.texture = robe_data.sleeves_texture
-		sleeves.visible = true
-		sleeves.material = robe_data.shader_material
-
-	trigger_shine()
-	check_synergies()
-
+	# Apply stats
 	stats.damage_multiplier *= robe_data.damage_multiplier
 	stats.fire_rate_multiplier *= robe_data.fire_rate_multiplier
 	stats.speed_multiplier += robe_data.speed_bonus
 
+	# Add weapon
 	if robe_data.weapon_scene:
 		var weapon = robe_data.weapon_scene.instantiate()
 		weapon_container.add_child(weapon)
@@ -119,93 +98,17 @@ func equip_robe(robe_data: RobeData):
 
 func equip_hat(hat_data: HatData):
 	hat_count += 1
-	latest_hat = hat_data
-	hat_sprite.visible = true
-	if hat_data.hat_texture:
-		hat_sprite.texture = hat_data.hat_texture
 
-	if hat_data.detail_texture:
-		hat_detail.texture = hat_data.detail_texture
-		hat_detail.visible = true
+	# In a real setup, we would swap 3D meshes here
+	# For now we'll just apply stats
 
-	if hat_data.shader_material:
-		hat_sprite.material = hat_data.shader_material
-		hat_detail.material = hat_data.shader_material
-
+	# Stack stats
 	stats.speed_multiplier += hat_data.speed_bonus
 	stats.damage_multiplier += hat_data.damage_multiplier
 	stats.regen_rate += hat_data.regen_bonus
 	stats.multi_shot += hat_data.multi_shot_bonus
 
-	# Bobbing animation cleanup and restart
-	if hat_bob_tween:
-		hat_bob_tween.kill()
-	if hat_detail_tween:
-		hat_detail_tween.kill()
-
-	hat_bob_tween = create_tween().set_loops()
-	hat_detail_tween = create_tween().set_loops()
-
-	var start_pos = Vector2(0, -16)
-	hat_bob_tween.tween_property(hat_sprite, "position", start_pos + Vector2(0, -hat_data.bob_amplitude), 1.0 / hat_data.bob_speed).set_trans(Tween.TRANS_SINE)
-	hat_bob_tween.tween_property(hat_sprite, "position", start_pos, 1.0 / hat_data.bob_speed).set_trans(Tween.TRANS_SINE)
-
-	hat_detail_tween.tween_property(hat_detail, "position", start_pos + Vector2(0, -hat_data.bob_amplitude), 1.0 / hat_data.bob_speed).set_trans(Tween.TRANS_SINE)
-	hat_detail_tween.tween_property(hat_detail, "position", start_pos, 1.0 / hat_data.bob_speed).set_trans(Tween.TRANS_SINE)
-
-	check_synergies()
 	GameManager.hat_equipped.emit(hat_data)
-
-func trigger_shine():
-	shine_overlay.visible = true
-	var mat = shine_overlay.material as ShaderMaterial
-	if mat:
-		var shine_tween = create_tween()
-		shine_tween.tween_property(mat, "shader_parameter/shine_progress", 1.0, 0.6).from(0.0)
-		shine_tween.finished.connect(func(): shine_overlay.visible = false)
-
-func check_synergies():
-	# Always clean old synergies first
-	for child in synergy_container.get_children():
-		child.queue_free()
-
-	if not latest_robe or not latest_hat:
-		return
-
-	var r_name = latest_robe.robe_name.to_lower()
-	var h_name = latest_hat.hat_name.to_lower()
-
-	var synergy_triggered = false
-	var effect_scene = ""
-
-	if "fire" in r_name and "speed" in h_name:
-		effect_scene = "res://scenes/Effects/Synergies/FlamingTrails.tscn"
-		synergy_triggered = true
-	elif "void" in r_name and "multi" in h_name:
-		effect_scene = "res://scenes/Effects/Synergies/OrbitingBlackHoles.tscn"
-		synergy_triggered = true
-	elif "frost" in r_name and "regen" in h_name:
-		effect_scene = "res://scenes/Effects/Synergies/HealingSnowflakes.tscn"
-		synergy_triggered = true
-	elif "nature" in r_name and "party" in h_name:
-		effect_scene = "res://scenes/Effects/Synergies/PetalConfetti.tscn"
-		synergy_triggered = true
-	elif "star" in r_name and "mystic" in h_name:
-		effect_scene = "res://scenes/Effects/Synergies/GalacticComet.tscn"
-		synergy_triggered = true
-
-	if synergy_triggered:
-		var scene = load(effect_scene)
-		if scene:
-			var effect = scene.instantiate()
-			synergy_container.add_child(effect)
-			glow_up()
-
-func glow_up():
-	var tween = create_tween().set_parallel(true)
-	tween.tween_property(body_node, "scale", Vector2(1.2, 1.2), 0.2)
-	tween.chain().tween_property(body_node, "scale", Vector2(1.0, 1.0), 0.2)
-	trigger_shine()
 
 func take_damage(amount: float):
 	health -= amount
@@ -216,60 +119,16 @@ func take_damage(amount: float):
 		die()
 
 func flash_damage():
-	if flash_tween:
-		flash_tween.kill()
-
-	flash_tween = create_tween()
-	var parts = [body_base, robe_base, robe_trim, sleeves]
-	for part in parts:
-		part.modulate = Color.RED
-
-	flash_tween.tween_property(body_base, "modulate", Color.WHITE, 0.2)
-	flash_tween.parallel().tween_property(robe_base, "modulate", Color.WHITE, 0.2)
-	flash_tween.parallel().tween_property(robe_trim, "modulate", Color.WHITE, 0.2)
-	flash_tween.parallel().tween_property(sleeves, "modulate", Color.WHITE, 0.2)
+	if renderer_3d:
+		renderer_3d.flash_red()
 
 func shake_screen():
-	var cam = $Camera2D
+	var cam = $CameraContainer/Camera2D
 	if not cam: return
 	var tween = create_tween()
 	for i in range(4):
 		tween.tween_property(cam, "offset", Vector2(randf_range(-5, 5), randf_range(-5, 5)), 0.05)
 	tween.tween_property(cam, "offset", Vector2.ZERO, 0.05)
 
-func apply_meta_upgrades():
-	var meta = SaveManager.user_data.purchased_upgrades
-	if meta.has("health_bonus"):
-		max_health += meta["health_bonus"] * 10
-	if meta.has("speed_bonus"):
-		stats.speed_multiplier += meta["speed_bonus"] * 0.05
-
-	if meta.get("candy_magnet", 0) > 0:
-		# Assume there's a pickup radius property or similar
-		# If not, we'll note it as a stat for future use
-		stats["pickup_radius_multiplier"] = 1.0 + (meta["candy_magnet"] * 0.2)
-
-	if meta.get("lucky_start", 0) > 0:
-		# 20% per level chance
-		if randf() < (meta["lucky_start"] * 0.2):
-			var unlocked_robes = SaveManager.user_data.unlocked_robes
-			if unlocked_robes.size() > 0:
-				var robe_id = unlocked_robes.pick_random()
-				var robe_path = "res://resources/robes/" + robe_id + "_robe.tres"
-				if ResourceLoader.exists(robe_path):
-					equip_robe(load(robe_path))
-
 func die():
-	var meta = SaveManager.user_data.purchased_upgrades
-	if meta.get("extra_life", 0) > 0 and not has_revived:
-		has_revived = true
-		health = max_health / 2
-		GameManager.player_health_changed.emit(health, max_health)
-		# Visual feedback
-		flash_damage()
-		return
-
-	GameManager.end_run()
-	get_tree().change_scene_to_file("res://scenes/UI/MainMenu.tscn")
-
-var has_revived = false
+	get_tree().reload_current_scene()

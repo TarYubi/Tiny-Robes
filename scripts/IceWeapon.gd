@@ -6,9 +6,9 @@ func attack():
 	for angle_offset in angles:
 		var proj = projectile_scene.instantiate()
 		proj.position = player.global_position
-		var final_angle = player.rotation + angle_offset
+		var final_angle = player.viewport_sprite.rotation + angle_offset
 		proj.direction = Vector2.RIGHT.rotated(final_angle)
 		proj.rotation = final_angle
 		proj.damage = damage * player.stats.damage_multiplier
-		proj.set_style("res://assets/sprites/proj_ice.png", Color.AQUA)
+		proj.modulate = Color.CYAN
 		get_tree().current_scene.add_child(proj)

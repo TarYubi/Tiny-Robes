@@ -1,19 +1,17 @@
-[gd_resource type="Resource" script_class="HatData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="HatData" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://resources/HatData.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/sprites/hats/multi_tophat/base.png" id="2_base"]
-[ext_resource type="Texture2D" path="res://assets/sprites/hats/multi_tophat/detail.png" id="3_detail"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hats/multi_tophat.png" id="2_texture"]
 
 [resource]
 script = ExtResource("1_script")
-hat_name = "Multi-Top Hat"
-description = "A classic black tophat with stars orbiting that grants multi-shot."
-hat_texture = ExtResource("2_base")
-detail_texture = ExtResource("3_detail")
+hat_name = "Multi tophat"
+description = "A cute multi tophat."
+hat_texture = ExtResource("2_texture")
 base_color = Color(1, 1, 1, 1)
 bob_speed = 2.0
 bob_amplitude = 2.0
-speed_bonus = 0.0
-damage_multiplier = 0.1
+speed_bonus = 0.1
+damage_multiplier = 0.05
 regen_bonus = 0.0
-multi_shot_bonus = 1
+multi_shot_bonus = 0
